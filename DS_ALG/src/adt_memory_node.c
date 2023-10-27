@@ -18,9 +18,18 @@ static s16 MEMNODE_initWithoutCheck(MemoryNode *node);	// inits a MN with no che
 static void* MEMNODE_data(MemoryNode *node);	// returns a reference to data_
 static u16 MEMNODE_size(MemoryNode *node);		// returns data size
 
+static s16 MEMNODE_setData(MemoryNode* node, void* src, u16 bytes);
+static s16 MEMNODE_reset(MemoryNode* node);
+static s16 MEMNODE_softReset(MemoryNode* node);
+
+
+
 // Memory Node's API Definitions
 struct memory_node_ops_s memory_node_ops = { .data = MEMNODE_data,
                                              .size = MEMNODE_size,
+                                             .setData = MEMNODE_setData,
+                                             .reset = MEMNODE_reset,
+                                             .softReset = MEMNODE_softReset,
 };
 
 // Memory Node Definitions
@@ -54,10 +63,62 @@ s16 MEMNODE_initWithoutCheck(MemoryNode *node) {
   return kErrorCode_Ok;
 }
 
-void* MEMNODE_data(MemoryNode *node) { // returns a reference to data_
+void* MEMNODE_data(MemoryNode *node)
+{ // returns a reference to data_
+  if(NULL == node)
+  {
+    return NULL;
+  } 
   return node->data_;
 }
 
 u16	MEMNODE_size(MemoryNode *node) { // returns data size
+  if (NULL == node)
+  {
+    return 0;
+  }
   return node->size_;
+}
+
+s16 MEMNODE_setData(MemoryNode *node, void *src, u16 bytes)
+{
+  if(NULL == node){
+    return kErrorCode_NodeNull;
+  }
+  if(NULL == src){
+    return kErrorCode_SrcNull;
+  }
+  if(0 == bytes){
+    return kErrorCode_BytesZero;
+  }
+  node->data_ = src;
+  node->size_ = bytes;
+  return kErrorCode_Ok;
+}
+
+s16 MEMNODE_reset(MemoryNode* node) 
+{
+    if (NULL == node)
+    {
+        return kErrorCode_NodeNull;
+    }
+    if (NULL == node->data_)
+    {
+        return kErrorCode_DataNull;
+    }
+    MM->free(node->data_);
+    node->data_ = NULL;
+    node->size_ = 0;
+    return kErrorCode_Ok;
+}
+
+s16 MEMNODE_softReset(MemoryNode* node)
+{
+    if (NULL == node)
+    {
+        return kErrorCode_NodeNull;
+    }
+
+
+    return kErrorCode_Ok;
 }
