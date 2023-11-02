@@ -16,6 +16,8 @@ typedef enum {
   kErrorCode_SrcNull = -11,
   kErrorCode_BytesZero = -12,
   kErrorCode_DataNull = -13,
+  kErrorCode_SizeZero = -14,
+  kErrorCode_SizeMismatch = -15,
 } ErrorCode;
 
 #endif // __COMMON_DEF_H__
