@@ -40,3 +40,4 @@ s16 MEMNODE_createFromRef(MemoryNode **node);
 s16 MEMNODE_createLite(MemoryNode *node); // Creates a memory node without memory allocation
 
 #endif // __ADT_MEMORY_NODE_H__
+

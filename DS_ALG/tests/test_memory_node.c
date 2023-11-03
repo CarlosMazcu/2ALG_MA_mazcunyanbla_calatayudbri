@@ -11,6 +11,8 @@
 
 #include "adt_memory_node.h"
 #include "EDK_MemoryManager/edk_memory_manager.h"
+#include "common_def.h"
+
 
 
 void printFunctionResult(MemoryNode *mn, u8 *msg, s16 error_type) {
@@ -22,8 +24,35 @@ void printFunctionResult(MemoryNode *mn, u8 *msg, s16 error_type) {
 	}
 	printf(" [TEST] Function %s returns ", msg);
   switch (error_type) { //Should this switch be improved by an "Error Msg" depending on the "Error Code"?
-    case 0:
-		  printf("OK");
+    case kErrorCode_Ok:
+		  printf("\nOK");
+		  break;
+	case kErrorCode_Null:
+		  printf("\nNULL");
+		  break;
+	case kErrorCode_Memory:
+		  printf("\nNot memory for Node");
+		  break;
+	case kErrorCode_NodeNull:
+		  printf("\nNode Null");
+		  break;
+	case kErrorCode_SrcNull:
+		  printf("\nSource to Set or Copy NULL");
+		  break;
+	case kErrorCode_BytesZero:
+		  printf("\nbytes to resize 0");
+		  break;
+	case kErrorCode_DataNull:
+		  printf("\n Data NULL");
+		  break;
+	case kErrorCode_SizeZero:
+		  printf("\nNode Size: 0");
+		  break;
+	case kErrorCode_SizeMismatch:
+		  printf("\nMismatch Size");
+		  break;
+	case kErrorCode_OpsNull:
+		  printf("\nOps NULL");
 		  break;
 	  default:
 		  strcpy((char *) error_msg, "");

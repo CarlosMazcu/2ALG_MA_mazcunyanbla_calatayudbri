@@ -32,7 +32,6 @@ static s16 MEMMNODE_memMask(MemoryNode *node, u8 mask);
 static void MEMMNODE_print(MemoryNode *node);
 
 
-
 // Memory Node's API Definitions
 struct memory_node_ops_s memory_node_ops = { .data = MEMNODE_data,
                                              .size = MEMNODE_size,
@@ -63,15 +62,18 @@ MemoryNode* MEMNODE_create() {
 
 s16 MEMNODE_createLite(MemoryNode *node)
 {
-
+  if (NULL == node) {
+    return kErrorCode_Memory;
+  }
+  node->data_ = NULL;
+  node->size_ = 0;
+  node->ops_ = &memory_node_ops;
+  return kErrorCode_Ok;
 }
 
 s16 MEMNODE_createFromRef(MemoryNode **node) {
   *node = MEMNODE_create();
   if (NULL == *node) {
-#ifdef VERBOSE_
-    printf("Error: [%s] not enough memory available\n", __FUNCTION__);
-#endif
     return kErrorCode_Memory;
   }
   return kErrorCode_Ok;
@@ -88,9 +90,9 @@ void* MEMNODE_data(MemoryNode *node)
 { // returns a reference to data_
   if(NULL == node)
   {
-    #ifdef VERBOSE_
+  #ifdef VERBOSE_
     printf("Error: [%s] not enough memory available\n", __FUNCTION__);
-    #endif
+  #endif
     return NULL;
   } 
   return node->data_;
@@ -99,9 +101,9 @@ void* MEMNODE_data(MemoryNode *node)
 u16	MEMNODE_size(MemoryNode *node) { // returns data size
   if (NULL == node)
   {
-    #ifdef VERBOSE_
+  #ifdef VERBOSE_
     printf("Error: [%s] not enough memory available\n", __FUNCTION__);
-    #endif
+  #endif
     return 0;
   }
   return node->size_;
@@ -110,21 +112,12 @@ u16	MEMNODE_size(MemoryNode *node) { // returns data size
 s16 MEMNODE_setData(MemoryNode *node, void *src, u16 bytes)
 {
   if(NULL == node){
-    #ifdef VERBOSE_
-    printf("Error: [%s] not enough memory available\n", __FUNCTION__);
-    #endif
     return kErrorCode_NodeNull;
   }
   if(NULL == src){
-    #ifdef VERBOSE_
-    printf("Error: [%s] not data to copy in the memory node\n", __FUNCTION__);
-    #endif
     return kErrorCode_SrcNull;
   }
   if(0 == bytes){
-    #ifdef VERBOSE_
-    printf("Error: [%s] bytes = 0, need not NULL value\n", __FUNCTION__);
-    #endif
     return kErrorCode_BytesZero;
   }
   node->data_ = src;
@@ -136,19 +129,13 @@ s16 MEMNODE_reset(MemoryNode* node)
 {
   if (NULL == node)
   {
-    #ifdef VERBOSE_
-    printf("Error: [%s] not enough memory available\n", __FUNCTION__);
-    #endif
     return kErrorCode_NodeNull;
   }
   if (NULL == node->data_)
   {
-    #ifdef VERBOSE_
-    printf("Error: [%s] node data NULL\n", __FUNCTION__);
-    #endif
     return kErrorCode_DataNull;
   }
-  // revisar si el free se hace aqui o en la funcion de MEMNODE_free
+  
   MM->free(node->data_);
   node->data_ = NULL;
   node->size_ = 0;
@@ -161,42 +148,63 @@ s16 MEMNODE_softReset(MemoryNode* node)
     {
         return kErrorCode_NodeNull;
     }
-
-
+  
+  node->data_ = NULL;
+  node->size_ = 0;
     return kErrorCode_Ok;
 }
 
 s16 MEMMNODE_free(MemoryNode *node)
 {
+    if (NULL == node)
+    {
+        return kErrorCode_NodeNull;
+    }
 
+  if (NULL == node->data_)
+  {
+        return kErrorCode_DataNull;
+  }
+  
+  if(NULL == node->ops_) {
+
+    return kErrorCode_OpsNull;
+  }
+
+    MM->free(node->data_);
+    node->data_ = NULL;
+    node->size_ = 0;
+
+    MM->free(node->ops_);
+    node->ops_ = NULL;  
+  return kErrorCode_Ok;
 }
 
 s16 MEMMNODE_softFree(MemoryNode *node)
 {
 
+  if (NULL == node)
+  {
+    return kErrorCode_NodeNull;
+  }
+
+  MM->free(node);
+  node = NULL;
+  return kErrorCode_Ok;
 }
 
 s16 MEMMNODE_memSet(MemoryNode *node, u8 value)
 {
   if(NULL == node)
   {
-    #ifdef VERBOSE_
-    printf("Error: [%s] not enough memory available\n", __FUNCTION__);
-    #endif
     return kErrorCode_NodeNull;
   }
   if(NULL == node->data_)
   {
-    #ifdef VERBOSE_
-    printf("Error: [%s] node data NULL\n", __FUNCTION__);
-    #endif
     return kErrorCode_DataNull;
   }
   if(0 == node->size_)
   {
-    #ifdef VERBOSE_
-    printf("Error: [%s] node size = 0, need some value\n", __FUNCTION__);
-    #endif
     return kErrorCode_SizeZero;
   }
   memset(node->data_, value, node->size_);
@@ -207,25 +215,17 @@ s16 MEMMNODE_memCopy(MemoryNode *node, void *src, u16 bytes)
 {
   if(NULL == node)
   {
-    #ifdef VERBOSE_
-    printf("Error: [%s] not enough memory available\n", __FUNCTION__);
-    #endif
     return kErrorCode_NodeNull;
   }
   if(NULL == node->data_ || NULL == src)
   {
-    #ifdef VERBOSE_
-    printf("Error: [%s] node data NULL\n", __FUNCTION__);
-    #endif
     return kErrorCode_DataNull;
   }
-  if(bytes > node->size_)
+  if(bytes > 0)
   {
-    #ifdef VERBOSE_
-    printf("Error: [%s] not enought node size\n", __FUNCTION__);
-    #endif
     return kErrorCode_SizeMismatch;
   }
+  
   memcpy(node->data_, src, bytes);
 
   return kErrorCode_Ok;
@@ -234,28 +234,52 @@ s16 MEMMNODE_memCopy(MemoryNode *node, void *src, u16 bytes)
 
 s16 MEMMNODE_memConcat(MemoryNode *node, void *src, u16 bytes)
 {
+  if(NULL == node)
+  {
+    return kErrorCode_NodeNull;
+  }
+  if(NULL == node->data_ || NULL == src)
+  {
+    return kErrorCode_DataNull;
+  }
+  if(0 == bytes || 0 == node->size_)
+  {
+    return kErrorCode_SizeMismatch;
+  }
 
+  u8* aux_data = MM->malloc(node->size_ + bytes);
+  if(NULL == aux_data)
+  {
+    return kErrorCode_Memory;
+  }
+  
+  //REVISAR ESTA PARTE[...]
+  /* for(int i = 0; i < (node->size_); i++){
+    aux_data[i] = (u8)(node->data_[i]);
+  }
+  for(int i = node->size_; i < (node->size_ + bytes); i++){
+    aux_data[i] = (u8)(src[i]);
+  } */
+
+
+
+  return kErrorCode_Ok;
 }
 
 s16 MEMMNODE_memMask(MemoryNode *node, u8 mask)
 {
-
+  // MemoryNode *aux = node;
+  //aux_node->data_[i] = node->data_[i] & 0
 }
 
 void MEMMNODE_print(MemoryNode *node)
 {
   if(NULL == node)
   {
-    #ifdef VERBOSE_
-    printf("Error: [%s] not enough memory available\n", __FUNCTION__);
-    #endif
     return kErrorCode_NodeNull;
   }
   if(NULL == node->data_)
   {
-    #ifdef VERBOSE_
-    printf("Error: [%s] data NULL\n", __FUNCTION__);
-    #endif
     return kErrorCode_DataNull;
 
   }
