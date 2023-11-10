@@ -13,7 +13,7 @@ PROJ_DIR = path.getabsolute("./..")
 PROJECT_NAMES = {
   "PR00_TestMemoryManager",
   "PR01_MemoryNode",
-  --"PR02_Vector",
+  "PR02_Vector",
   --"PR03_CircularVector",
   --"PR04_MovableVector",
   --"PR05_List",
@@ -126,7 +126,7 @@ project "PR01_MemoryNode"
 	  path.join(PROJ_DIR, "tests/test_memory_node.c"),
   }
 
---[[
+
 project "PR02_Vector"
   files {
     path.join(PROJ_DIR, "include/adt_memory_node.h"),
@@ -135,4 +135,14 @@ project "PR02_Vector"
     path.join(PROJ_DIR, "src/adt_vector.c"),
     path.join(PROJ_DIR, "tests/test_vector.c"),
   }
-]]--
+--[[
+
+  project "PR03_CircularVector"
+  files {
+    path.join(PROJ_DIR, "include/adt_memory_node.h"),
+    path.join(PROJ_DIR, "src/adt_memory_node.c"),
+    path.join(PROJ_DIR, "include/adt_vector.h"),
+    path.join(PROJ_DIR, "src/adt_vector.c"),
+    path.join(PROJ_DIR, "tests/test_vector.c"),
+  }
+    --"PR04_MovableVector",]]--

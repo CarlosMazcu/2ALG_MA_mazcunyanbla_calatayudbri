@@ -21,15 +21,15 @@ static s16 MEMNODE_setData(MemoryNode* node, void* src, u16 bytes);
 
 static s16 MEMNODE_reset(MemoryNode* node);
 static s16 MEMNODE_softReset(MemoryNode* node);
-static s16 MEMMNODE_free(MemoryNode *node);
-static s16 MEMMNODE_softFree(MemoryNode *node);
+static s16 MEMNODE_free(MemoryNode *node);
+static s16 MEMNODE_softFree(MemoryNode *node);
 
-static s16 MEMMNODE_memSet(MemoryNode *node, u8 value);
-static s16 MEMMNODE_memCopy(MemoryNode *node, void *src, u16 bytes);
-static s16 MEMMNODE_memConcat(MemoryNode *node, void *src, u16 bytes);
-static s16 MEMMNODE_memMask(MemoryNode *node, u8 mask);
+static s16 MEMNODE_memSet(MemoryNode *node, u8 value);
+static s16 MEMNODE_memCopy(MemoryNode *node, void *src, u16 bytes);
+static s16 MEMNODE_memConcat(MemoryNode *node, void *src, u16 bytes);
+static s16 MEMNODE_memMask(MemoryNode *node, u8 mask);
 
-static void MEMMNODE_print(MemoryNode *node);
+static void MEMNODE_print(MemoryNode *node);
 
 
 // Memory Node's API Definitions
@@ -38,13 +38,13 @@ struct memory_node_ops_s memory_node_ops = { .data = MEMNODE_data,
                                              .setData = MEMNODE_setData,
                                              .reset = MEMNODE_reset,
                                              .softReset = MEMNODE_softReset,
-                                             .free = MEMMNODE_free,
-                                             .softFree = MEMMNODE_softFree,
-                                             .memSet = MEMMNODE_memSet,
-                                             .memCopy = MEMMNODE_memCopy,
-                                             .memConcat = MEMMNODE_memConcat,
-                                             .memMask = MEMMNODE_memMask,
-                                             .print = MEMMNODE_print,
+                                             .free = MEMNODE_free,
+                                             .softFree = MEMNODE_softFree,
+                                             .memSet = MEMNODE_memSet,
+                                             .memCopy = MEMNODE_memCopy,
+                                             .memConcat = MEMNODE_memConcat,
+                                             .memMask = MEMNODE_memMask,
+                                             .print = MEMNODE_print,
 };
 
 // Memory Node Definitions
@@ -72,10 +72,10 @@ s16 MEMNODE_createLite(MemoryNode *node)
 }
 
 s16 MEMNODE_createFromRef(MemoryNode **node) {
-  *node = MEMNODE_create();
   if (NULL == *node) {
     return kErrorCode_Memory;
   }
+  *node = MEMNODE_create();
   return kErrorCode_Ok;
 }
 
@@ -154,7 +154,7 @@ s16 MEMNODE_softReset(MemoryNode* node)
     return kErrorCode_Ok;
 }
 
-s16 MEMMNODE_free(MemoryNode *node)
+s16 MEMNODE_free(MemoryNode *node)
 {
     if (NULL == node)
     {
@@ -180,7 +180,7 @@ s16 MEMMNODE_free(MemoryNode *node)
   return kErrorCode_Ok;
 }
 
-s16 MEMMNODE_softFree(MemoryNode *node)
+s16 MEMNODE_softFree(MemoryNode *node)
 {
 
   if (NULL == node)
@@ -193,7 +193,7 @@ s16 MEMMNODE_softFree(MemoryNode *node)
   return kErrorCode_Ok;
 }
 
-s16 MEMMNODE_memSet(MemoryNode *node, u8 value)
+s16 MEMNODE_memSet(MemoryNode *node, u8 value)
 {
   if(NULL == node)
   {
@@ -211,7 +211,7 @@ s16 MEMMNODE_memSet(MemoryNode *node, u8 value)
   return kErrorCode_Ok;
 }
 
-s16 MEMMNODE_memCopy(MemoryNode *node, void *src, u16 bytes)
+s16 MEMNODE_memCopy(MemoryNode *node, void *src, u16 bytes)
 {
   if(NULL == node)
   {
@@ -232,7 +232,7 @@ s16 MEMMNODE_memCopy(MemoryNode *node, void *src, u16 bytes)
 
 }
 
-s16 MEMMNODE_memConcat(MemoryNode *node, void *src, u16 bytes)
+s16 MEMNODE_memConcat(MemoryNode *node, void *src, u16 bytes)
 {
   if(NULL == node)
   {
@@ -266,13 +266,13 @@ s16 MEMMNODE_memConcat(MemoryNode *node, void *src, u16 bytes)
   return kErrorCode_Ok;
 }
 
-s16 MEMMNODE_memMask(MemoryNode *node, u8 mask)
+s16 MEMNODE_memMask(MemoryNode *node, u8 mask)
 {
   // MemoryNode *aux = node;
   //aux_node->data_[i] = node->data_[i] & 0
 }
 
-void MEMMNODE_print(MemoryNode *node)
+void MEMNODE_print(MemoryNode *node)
 {
   if(NULL == node)
   {
