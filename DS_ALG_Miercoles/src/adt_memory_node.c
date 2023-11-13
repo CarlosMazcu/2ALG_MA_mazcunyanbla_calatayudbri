@@ -76,6 +76,8 @@ s16 MEMNODE_createFromRef(MemoryNode **node) {
   if (NULL == *node) {
     return kErrorCode_Memory;
   }
+
+
   return kErrorCode_Ok;
 }
 
@@ -217,14 +219,16 @@ s16 MEMMNODE_memCopy(MemoryNode *node, void *src, u16 bytes)
   {
     return kErrorCode_NodeNull;
   }
-  if(NULL == node->data_ || NULL == src)
+  if(NULL == node->data_)
   {
     return kErrorCode_DataNull;
   }
-  if(bytes > 0)
+
+  if(bytes < 0)
   {
     return kErrorCode_SizeMismatch;
   }
+  
   
   memcpy(node->data_, src, bytes);
 
