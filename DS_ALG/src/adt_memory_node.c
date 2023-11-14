@@ -221,7 +221,7 @@ s16 MEMNODE_memCopy(MemoryNode *node, void *src, u16 bytes)
   {
     return kErrorCode_DataNull;
   }
-  if(bytes > 0)
+  if(bytes < 0)
   {
     return kErrorCode_SizeMismatch;
   }
@@ -232,7 +232,7 @@ s16 MEMNODE_memCopy(MemoryNode *node, void *src, u16 bytes)
 
 }
 
-s16 MEMNODE_memConcat(MemoryNode *node, void *src, u16 bytes)
+s16 MEMMNODE_memConcat(MemoryNode *node, void *src, u16 bytes)
 {
   if(NULL == node)
   {
@@ -246,47 +246,67 @@ s16 MEMNODE_memConcat(MemoryNode *node, void *src, u16 bytes)
   {
     return kErrorCode_SizeMismatch;
   }
+  u16 aux_size = node->size_ + bytes;
+  u8 *aux_1 = (u8 *)node->data_;
+  u8* aux_2 = (u8*)src;
+  u8 *aux_3 = (u8 *)MM->malloc(aux_size);
 
-  u8* aux_data = MM->malloc(node->size_ + bytes);
-  if(NULL == aux_data)
+  if(NULL == aux_3)
   {
     return kErrorCode_Memory;
   }
   
-  //REVISAR ESTA PARTE[...]
-  /* for(int i = 0; i < (node->size_); i++){
-    aux_data[i] = (u8)(node->data_[i]);
+  for(int i = 0; i < (node->size_); i++){
+    aux_3[i] = (u8)(aux_1[i]);
   }
-  for(int i = node->size_; i < (node->size_ + bytes); i++){
-    aux_data[i] = (u8)(src[i]);
-  } */
+  for (int i = node->size_; i < (aux_size); i++)
+  {
+    aux_3[i] = (u8)(aux_2[i]);
+  }
 
-
+  MM->free(node->data_);
+  node->data_ = aux_3;
+  node->size_ = aux_size;
 
   return kErrorCode_Ok;
 }
 
-s16 MEMNODE_memMask(MemoryNode *node, u8 mask)
+s16 MEMMNODE_memMask(MemoryNode *node, u8 mask)
 {
-  // MemoryNode *aux = node;
-  //aux_node->data_[i] = node->data_[i] & 0
+  if(NULL == node) {
+    return kErrorCode_NodeNull;
+  }
+
+  if(NULL == node->data_){
+    return kErrorCode_DataNull;
+  }
+
+  u8* aux = (u8*)node->data_;
+  u8* aux_2 = (u8*)MM->malloc(node->size_);
+
+  for(int i = 0; i < node->size_; i++){
+    aux_2[i] = mask & aux[i];
+  }
+
+  node->data_ = aux_2;
+  return kErrorCode_Ok;
 }
 
-void MEMNODE_print(MemoryNode *node)
+void MEMMNODE_print(MemoryNode *node)
 {
   if(NULL == node)
   {
     return kErrorCode_NodeNull;
   }
+  printf("[Node Info]Adress Node: %d\n", &node);
+  printf("[Node Info]Size: %u\n", node->size_);
   if(NULL == node->data_)
   {
-    return kErrorCode_DataNull;
-
+   printf("Data: NULL\n");
+   return kErrorCode_DataNull;
   }
-  printf("Memory Node:\n");
-  printf("Size: %u bytes\n", node->size_);
-  printf("Data:\n");
 
+  printf("Data: ");
   unsigned char *data = (unsigned char*)node->data_;
   for(u16 i = 0; i < node->size_; i++)
   {
