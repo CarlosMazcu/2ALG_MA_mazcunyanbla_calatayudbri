@@ -163,11 +163,13 @@ s16 MEMNODE_free(MemoryNode *node)
 
   if (NULL == node->data_)
   {
-        return kErrorCode_DataNull;
+    MM->free(node);
+    return kErrorCode_DataNull;
   }
   
-  if(NULL == node->ops_) {
-
+  if(NULL == node->ops_)
+  {
+    MM->free(node);  
     return kErrorCode_OpsNull;
   }
 
@@ -176,9 +178,14 @@ s16 MEMNODE_free(MemoryNode *node)
     node->size_ = 0;
 
     MM->free(node->ops_);
-    node->ops_ = NULL;  
+    node->ops_ = NULL;
+
+    MM->free(node);  
+    node = NULL;
+
   return kErrorCode_Ok;
 }
+
 
 s16 MEMNODE_softFree(MemoryNode *node)
 {
@@ -221,10 +228,10 @@ s16 MEMNODE_memCopy(MemoryNode *node, void *src, u16 bytes)
   {
     return kErrorCode_DataNull;
   }
-  if(bytes < 0)
+/*   if(bytes < 0)
   {
     return kErrorCode_SizeMismatch;
-  }
+  } */
   
   memcpy(node->data_, src, bytes);
 

@@ -1,5 +1,0 @@
-﻿  test_memory_manager.c
-C:\Users\carlo\OneDrive\Documentos\GitHub\2ALG_MA_mazcunyanbla_calatayudbri\DS_ALG\tests\test_memory_manager.c(54,27): warning C4100: 'argv': parámetro formal sin referencia
-C:\Users\carlo\OneDrive\Documentos\GitHub\2ALG_MA_mazcunyanbla_calatayudbri\DS_ALG\tests\test_memory_manager.c(54,14): warning C4100: 'argc': parámetro formal sin referencia
-EDK_MemoryManager_Windows_d.lib(edk_memory_manager.obj) : warning LNK4099: no se encontró PDB 'EDK_MemoryManager_Windows_d.pdb' con 'EDK_MemoryManager_Windows_d.lib(edk_memory_manager.obj)' o en 'C:\Users\carlo\OneDrive\Documentos\GitHub\2ALG_MA_mazcunyanbla_calatayudbri\DS_ALG\bin\Debug\x32\EDK_MemoryManager_Windows_d.pdb'; se vinculará el objeto sin tener en cuenta información de depuración
-  PR00_TestMemoryManager.vcxproj -> C:\Users\carlo\OneDrive\Documentos\GitHub\2ALG_MA_mazcunyanbla_calatayudbri\DS_ALG\bin\Debug\x32\PR00_TestMemoryManager_d.exe
