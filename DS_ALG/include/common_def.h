@@ -19,7 +19,7 @@ typedef enum {
   kErrorCode_SizeZero = -14,
   kErrorCode_SizeMismatch = -15,
   kErrorCode_OpsNull = -16,
-  
+  kErrorCode_VectorNull = -20,
   
 } ErrorCode;
 

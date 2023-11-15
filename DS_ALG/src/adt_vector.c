@@ -87,45 +87,92 @@ Vector *VECTOR_create(u16 capacity)
 
 s16 VECTOR_destroy(Vector* vector)
 {
+  // to do
 
+  if(NULL == vector)
+  {
+    return kErrorCode_VectorNull;
+  }
+
+  if(NULL == vector->storage_)
+  {
+    MM->free(vector);
+    return kErrorCode_Ok;
+  }
+  
+  for(u16 i = 0; i < vector->tail_; i++)
+  {
+    MM->free(vector->storage_[i].data_);
+  }
+  MM->free(vector->storage_);
+  MM->free(vector);
+
+  return kErrorCode_Ok;
 }
 
-static s16 VECTOR_softReset(Vector *vector)
-{
+// static s16 VECTOR_softReset(Vector *vector)
+// {
 
-}
+// }
 
-static s16 VECTOR_reset(Vector *vector)
-{
+// static s16 VECTOR_reset(Vector *vector)
+// {
 
-}
+// }
 
-static s16 VECTOR_resize(Vector *vector, u16 new_capacity)
-{
+// static s16 VECTOR_resize(Vector *vector, u16 new_capacity)
+// {
 
-}
+// }
 
 static u16 VECTOR_capacity(Vector *vector)
 {
+  if(NULL == vector)
+  {
+    return kErrorCode_VectorNull;
+  }
+
+  return vector->capacity_;
 
 }
 
 static u16 VECTOR_length(Vector *vector)
 {
+  if (NULL == vector)
+  {
+    return kErrorCode_VectorNull;
+  }
 
+  return vector->tail_;
 }
 
 static boolean VECTOR_isEmpty(Vector *vector)
 {
-
+  if (NULL == vector)
+  {
+    return kErrorCode_VectorNull;
+  }
+  if (vector->head_ == vector->tail_)
+  {
+    return True;
+  }
+  else
+  {
+    return False;
+  }
 }
 
 static boolean VECTOR_isFull(Vector *vector)
 {
-
+  if (NULL == vector)
+  {
+    return kErrorCode_VectorNull;
+  }
+  if(vector->tail_ == vector->capacity_)
+  {
+    return True;
+  }else{
+    return False;
+  }
 }
 
-
-
-/* · · · · <===3 
-   8===D · · · ·*/
