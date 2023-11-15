@@ -72,10 +72,11 @@ s16 MEMNODE_createLite(MemoryNode *node)
 }
 
 s16 MEMNODE_createFromRef(MemoryNode **node) {
-  if (NULL == *node) {
+  if (NULL == node) {
     return kErrorCode_Memory;
   }
   *node = MEMNODE_create();
+  MEMNODE_initWithoutCheck(*node);
   return kErrorCode_Ok;
 }
 
@@ -120,9 +121,11 @@ s16 MEMNODE_setData(MemoryNode *node, void *src, u16 bytes)
   if(0 == bytes){
     return kErrorCode_BytesZero;
   }
-  node->data_ = src;
-  node->size_ = bytes;
-  return kErrorCode_Ok;
+  {
+      node->data_ = src;
+      node->size_ = bytes;
+      return kErrorCode_Ok;
+  }
 }
 
 s16 MEMNODE_reset(MemoryNode* node) 
@@ -164,24 +167,16 @@ s16 MEMNODE_free(MemoryNode *node)
   if (NULL == node->data_)
   {
     MM->free(node);
-    return kErrorCode_DataNull;
+    return kErrorCode_Ok;
   }
   
-  if(NULL == node->ops_)
-  {
-    MM->free(node);  
-    return kErrorCode_OpsNull;
-  }
 
     MM->free(node->data_);
-    node->data_ = NULL;
-    node->size_ = 0;
-
-    MM->free(node->ops_);
-    node->ops_ = NULL;
+    // node->data_ = NULL;
+   // node->size_ = 0;
 
     MM->free(node);  
-    node = NULL;
+    // node = NULL;
 
   return kErrorCode_Ok;
 }
@@ -196,7 +191,7 @@ s16 MEMNODE_softFree(MemoryNode *node)
   }
 
   MM->free(node);
-  node = NULL;
+  //node = NULL;
   return kErrorCode_Ok;
 }
 
@@ -217,7 +212,7 @@ s16 MEMNODE_memSet(MemoryNode *node, u8 value)
   memset(node->data_, value, node->size_);
   return kErrorCode_Ok;
 }
-
+/*
 s16 MEMNODE_memCopy(MemoryNode *node, void *src, u16 bytes)
 {
   if(NULL == node)
@@ -231,44 +226,71 @@ s16 MEMNODE_memCopy(MemoryNode *node, void *src, u16 bytes)
 /*   if(bytes < 0)
   {
     return kErrorCode_SizeMismatch;
-  } */
+  } 
   
   memcpy(node->data_, src, bytes);
 
   return kErrorCode_Ok;
 
+}*/
+
+s16 MEMNODE_memCopy(MemoryNode* node, void* src, u16 bytes)
+{
+    if (NULL == node)
+    {
+        return kErrorCode_NodeNull;
+    }
+    if (NULL == src) {
+        return kErrorCode_Null;
+    }
+    if (bytes == 0) {
+        return kErrorCode_SizeZero;
+    }
+    if (NULL != node->data_) {
+        MM->free(node->data_);
+    }
+    u8* aux = (u8*)src;
+    u8* aux2 = (u8*)MM->malloc(bytes);
+    if (NULL == aux2) {
+        return kErrorCode_Memory;
+    }
+    for (int i = 0; i < bytes; i++)
+    {
+        aux2[i] = aux[i];
+    }
+    node->data_ = aux2;
+    node->size_ = bytes;
+    return kErrorCode_Ok;
 }
 
-s16 MEMMNODE_memConcat(MemoryNode *node, void *src, u16 bytes)
+s16 MEMNODE_memConcat(MemoryNode *node, void *src, u16 bytes)
 {
   if(NULL == node)
   {
     return kErrorCode_NodeNull;
   }
-  if(NULL == node->data_ || NULL == src)
+  if(NULL == node->data_)
   {
     return kErrorCode_DataNull;
   }
-  if(0 == bytes || 0 == node->size_)
-  {
-    return kErrorCode_SizeMismatch;
-  }
+  
   u16 aux_size = node->size_ + bytes;
-  u8 *aux_1 = (u8 *)node->data_;
+  u8 *aux_1 = (u8*)node->data_;
   u8* aux_2 = (u8*)src;
-  u8 *aux_3 = (u8 *)MM->malloc(aux_size);
+  u8 *aux_3 = (u8*)MM->malloc(aux_size);
 
   if(NULL == aux_3)
   {
     return kErrorCode_Memory;
   }
+  int i = 0;
   
-  for(int i = 0; i < (node->size_); i++){
-    aux_3[i] = (u8)(aux_1[i]);
+  for(i = 0; i < node->size_; i++){
+    aux_3[i] = (aux_1[i]);
   }
-  for (int i = node->size_; i < (aux_size); i++)
+  for (i; i < aux_size; i++)
   {
-    aux_3[i] = (u8)(aux_2[i]);
+    aux_3[i] = aux_2[i-node->size_];
   }
 
   MM->free(node->data_);
@@ -278,7 +300,7 @@ s16 MEMMNODE_memConcat(MemoryNode *node, void *src, u16 bytes)
   return kErrorCode_Ok;
 }
 
-s16 MEMMNODE_memMask(MemoryNode *node, u8 mask)
+s16 MEMNODE_memMask(MemoryNode *node, u8 mask)
 {
   if(NULL == node) {
     return kErrorCode_NodeNull;
@@ -289,36 +311,41 @@ s16 MEMMNODE_memMask(MemoryNode *node, u8 mask)
   }
 
   u8* aux = (u8*)node->data_;
-  u8* aux_2 = (u8*)MM->malloc(node->size_);
 
-  for(int i = 0; i < node->size_; i++){
-    aux_2[i] = mask & aux[i];
+  for (u8 i = 0; i < node->size_; i++) {
+      aux[i] &= mask;
   }
 
-  node->data_ = aux_2;
+  node->data_ = aux;
   return kErrorCode_Ok;
 }
 
-void MEMMNODE_print(MemoryNode *node)
+void MEMNODE_print(MemoryNode *node)
 {
   if(NULL == node)
   {
     return kErrorCode_NodeNull;
   }
-  printf("[Node Info]Adress Node: %d\n", &node);
-  printf("[Node Info]Size: %u\n", node->size_);
+  printf("[Node Info]Adress Node: %p\n", &node);
+  printf("[Node Info]Size: %d\n", node->size_);
   if(NULL == node->data_)
   {
-   printf("Data: NULL\n");
+   printf("\t[Node Info] Data Address: NULL\n");
    return kErrorCode_DataNull;
   }
-
-  printf("Data: ");
-  unsigned char *data = (unsigned char*)node->data_;
-  for(u16 i = 0; i < node->size_; i++)
+  printf("\t[Node Info] Data Address: %p\n", node->data_);
+  printf("\t[Node Info] Data Content: \n");
+  u8* aux = (u8*)node->data_;
+  for (int i = 0; i < node->size_; i++)
   {
-    printf("%02X ", data[i]);
+      printf("%c", aux[i]);
   }
   printf("\n");
+  //unsigned char *data = (unsigned char*)node->data_;
+  //for(u16 i = 0; i < node->size_; i++)
+  //{
+    //printf("%02X ", data[i]);
+  //}
+  //printf("\n");
   return kErrorCode_Ok;
 }

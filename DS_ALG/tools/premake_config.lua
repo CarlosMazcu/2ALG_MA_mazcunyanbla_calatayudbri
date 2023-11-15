@@ -11,9 +11,9 @@
 PROJ_DIR = path.getabsolute("./..")
 
 PROJECT_NAMES = {
-  "PR00_TestMemoryManager",
-  "PR01_MemoryNode",
-  "PR02_Vector",
+  "PRXX_TestMemoryManager",
+  "PR00_MemoryNode",
+ --"PR02_Vector",
   --"PR03_CircularVector",
   --"PR04_MovableVector",
   --"PR05_List",
@@ -114,12 +114,12 @@ for i, prj in ipairs(PROJECT_NAMES) do
 end
 
 
-project "PR00_TestMemoryManager"
+project "PRXX_TestMemoryManager"
   files {
     path.join(PROJ_DIR, "tests/test_memory_manager.c"),
   }
 
-project "PR01_MemoryNode"
+project "PR00_MemoryNode"
 	files {
 	  path.join(PROJ_DIR, "include/adt_memory_node.h"),
 	  path.join(PROJ_DIR, "src/adt_memory_node.c"),
@@ -127,14 +127,14 @@ project "PR01_MemoryNode"
   }
 
 
-project "PR02_Vector"
-  files {
-    path.join(PROJ_DIR, "include/adt_memory_node.h"),
-    path.join(PROJ_DIR, "src/adt_memory_node.c"),
-    path.join(PROJ_DIR, "include/adt_vector.h"),
-    path.join(PROJ_DIR, "src/adt_vector.c"),
-    path.join(PROJ_DIR, "tests/test_vector.c"),
-  }
+-- project "PR02_Vector"
+--   files {
+--     path.join(PROJ_DIR, "include/adt_memory_node.h"),
+--     path.join(PROJ_DIR, "src/adt_memory_node.c"),
+--     path.join(PROJ_DIR, "include/adt_vector.h"),
+--     path.join(PROJ_DIR, "src/adt_vector.c"),
+--     path.join(PROJ_DIR, "tests/test_vector.c"),
+--   }
 --[[
 
   project "PR03_CircularVector"
