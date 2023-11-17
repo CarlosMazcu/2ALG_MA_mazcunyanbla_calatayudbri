@@ -76,6 +76,12 @@ s16 MEMNODE_createFromRef(MemoryNode **node) {
     return kErrorCode_Memory;
   }
   *node = MEMNODE_create();
+  if(NULL == *node)
+  {
+    #ifdef VERBOSE_
+    printf("Error: [%s] not enough memory available\n", __FUNCTION__);
+    #endif
+  }
   MEMNODE_initWithoutCheck(*node);
   return kErrorCode_Ok;
 }
@@ -316,7 +322,6 @@ s16 MEMNODE_memMask(MemoryNode *node, u8 mask)
       aux[i] &= mask;
   }
 
-  node->data_ = aux;
   return kErrorCode_Ok;
 }
 
@@ -326,7 +331,7 @@ void MEMNODE_print(MemoryNode *node)
   {
     return kErrorCode_NodeNull;
   }
-  printf("[Node Info]Adress Node: %p\n", &node);
+  printf("[Node Info]Adress Node: %p\n", node);
   printf("[Node Info]Size: %d\n", node->size_);
   if(NULL == node->data_)
   {

@@ -8,11 +8,12 @@
 
 #define VERBOSE_
 
-typedef enum {
+typedef enum
+{
   kErrorCode_Ok = 0,
   kErrorCode_Null = -1,
   kErrorCode_Memory = -2,
-  kErrorCode_NodeNull = -10, 
+  kErrorCode_NodeNull = -10,
   kErrorCode_SrcNull = -11,
   kErrorCode_BytesZero = -12,
   kErrorCode_DataNull = -13,
@@ -20,7 +21,11 @@ typedef enum {
   kErrorCode_SizeMismatch = -15,
   kErrorCode_OpsNull = -16,
   kErrorCode_VectorNull = -20,
-  
-} ErrorCode;
+  kErrorCode_StorageNull = -21,
+  kErrorCode_VectorFull = -22,
+  kErrorCode_VectorEmpty = -23,
+  kErrorCode_PositionMismatch = -24,
+}
+ErrorCode;
 
 #endif // __COMMON_DEF_H__
