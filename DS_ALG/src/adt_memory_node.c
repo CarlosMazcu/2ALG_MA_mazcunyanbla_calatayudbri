@@ -127,11 +127,11 @@ s16 MEMNODE_setData(MemoryNode *node, void *src, u16 bytes)
   if(0 == bytes){
     return kErrorCode_BytesZero;
   }
-  {
-      node->data_ = src;
+  
       node->size_ = bytes;
+      node->data_ = src;
       return kErrorCode_Ok;
-  }
+  
 }
 
 s16 MEMNODE_reset(MemoryNode* node) 

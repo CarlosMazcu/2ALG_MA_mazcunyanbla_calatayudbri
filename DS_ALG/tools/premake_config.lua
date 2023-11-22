@@ -13,7 +13,7 @@ PROJ_DIR = path.getabsolute("./..")
 PROJECT_NAMES = {
   "PRXX_TestMemoryManager",
   "PR00_MemoryNode",
- --"PR02_Vector",
+  "PR01_Vector",
   --"PR03_CircularVector",
   --"PR04_MovableVector",
   --"PR05_List",
@@ -32,7 +32,7 @@ workspace("DS_ALG_AI1" .. _ACTION)
   location(PROJ_DIR .. "/build/")
   language "C"
   kind "ConsoleApp"
-  startproject "PR00_MemoryNode"
+  startproject "PR01_Vector"
   platforms {
     "x32",
     "x64",
@@ -127,14 +127,14 @@ project "PR00_MemoryNode"
   }
 
 
--- project "PR02_Vector"
---   files {
---     path.join(PROJ_DIR, "include/adt_memory_node.h"),
---     path.join(PROJ_DIR, "src/adt_memory_node.c"),
---     path.join(PROJ_DIR, "include/adt_vector.h"),
---     path.join(PROJ_DIR, "src/adt_vector.c"),
---     path.join(PROJ_DIR, "tests/test_vector.c"),
---   }
+project "PR01_Vector"
+  files {
+    path.join(PROJ_DIR, "include/adt_memory_node.h"),
+    path.join(PROJ_DIR, "src/adt_memory_node.c"),
+    path.join(PROJ_DIR, "include/adt_vector.h"),
+    path.join(PROJ_DIR, "src/adt_vector.c"),
+    path.join(PROJ_DIR, "tests/test_vector.c"),
+  }
 --[[
 
   project "PR03_CircularVector"
