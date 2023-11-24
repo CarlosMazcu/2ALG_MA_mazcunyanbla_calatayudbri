@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "common_def.h"
 
 #include "EDK_MemoryManager/edk_memory_manager.h"
 
@@ -237,8 +238,53 @@ void TESTBASE_printFunctionResult(void *address, u8 *msg, s16 error_type) {
 	}
 	printf(" [TEST] Function %s returns ", msg);
 	switch (error_type) {
-	case 0:
+	case kErrorCode_Ok:
 		printf("OK");
+		break;
+	case kErrorCode_Null:
+		printf("\nNULL");
+		break;
+	case kErrorCode_Memory:
+		printf("\nNot memory for Node");
+		break;
+	case kErrorCode_NodeNull:
+		printf("\nNode Null");
+		break;
+	case kErrorCode_SrcNull:
+		printf("\nSource to Set or Copy NULL");
+		break;
+	case kErrorCode_BytesZero:
+		printf("\nbytes to resize 0");
+		break;
+	case kErrorCode_DataNull:
+		printf("\n Data NULL");
+		break;
+	case kErrorCode_SizeZero:
+		printf("\nNode Size: 0");
+		break;
+	case kErrorCode_SizeMismatch:
+		printf("\nMismatch Size");
+		break;
+	case kErrorCode_OpsNull:
+		printf("\nOps NULL");
+		break;
+	case kErrorCode_VectorNull:
+		printf("\nVector NULL");
+		break;
+	case kErrorCode_StorageNull:
+		printf("\nVector Storage NULL");
+		break;
+	case kErrorCode_VectorFull:
+		prinft("\nVectro Full");
+		break;
+	case kErrorCode_VectorEmpty:
+		printf("\nVector Empty");
+		break;
+	case kErrorCode_PositionMismatch:
+		printf("\nPosition Mismasch");
+		break;
+	case kErrorCode_NotEnoughCapacity:
+		printf("\Not Enought Capacity in Vector");
 		break;
 	default:
 		strcpy((char *)error_msg, "");
