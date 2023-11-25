@@ -18,7 +18,8 @@ const u16 kCapacityVector1 = 30;
 const u16 kCapacityVector2 = 5;
 const u16 kCapacityVector3 = 2;
 
-int main() {
+int main()
+{
 	s16 error_type = 0;
 
 	TESTBASE_generateDataForTest();
@@ -26,7 +27,8 @@ int main() {
 	// vector created just to have a reference to the operations
 	Vector *v = NULL;
 	v = VECTOR_create(1);
-	if (NULL == v) {
+	if (NULL == v)
+	{
 		printf("\n create returned a null node in vector for ops");
 		return -1;
 	}
@@ -35,17 +37,20 @@ int main() {
 	Vector *vector_2 = NULL;
 	Vector *vector_3 = NULL;
 	vector_1 = VECTOR_create(kCapacityVector1);
-	if (NULL == vector_1) {
+	if (NULL == vector_1)
+	{
 		printf("\n create returned a null node in vector_1\n");
 		return -1;
 	}
 	vector_2 = VECTOR_create(kCapacityVector2);
-	if (NULL == vector_2) {
+	if (NULL == vector_2)
+	{
 		printf("\n create returned a null node in vector_2\n");
 		return -1;
 	}
 	vector_3 = VECTOR_create(kCapacityVector3);
-	if (NULL == vector_3) {
+	if (NULL == vector_3)
+	{
 		printf("\n create returned a null node in vector_3\n");
 		return -1;
 	}
@@ -59,8 +64,7 @@ int main() {
 	printf("  + vector_3: %zu\n", sizeof(*vector_3));
 	printf("	+ storage: %zu\n", sizeof(*(vector_3->storage_)));
 
-
-	//FIRST BATTERY
+	// FIRST BATTERY
 	printf("---------------- FIRST BATTERY ----------------\n\n");
 	// reset
 	printf("\n\n# Test Reset\n");
@@ -299,7 +303,6 @@ int main() {
 	printf("\t Length vector_2 = %d \n", v->ops_->length(vector_2));
 	printf("\t Length vector_3 = %d \n", v->ops_->length(vector_3));
 
-
 	printf("\n\n# Test First\n");
 	printf("\t first vector_3\n");
 	data = v->ops_->first(vector_3);
@@ -324,7 +327,6 @@ int main() {
 		printf("Last in vector_3: NULL\n");
 	else
 		printf("ERROR: Last in vector_3: \"%s\"\n", data);
-
 
 	printf("\n\n# Test Concat\n");
 	printf("\t concat vector_3 + vector_2\n");
@@ -360,7 +362,8 @@ int main() {
 	printf("\n\n---------------- NULL BATTERY ----------------\n\n");
 	printf("\n\n# Test Create\n");
 	vector_2 = VECTOR_create(0);
-	if (NULL != vector_2) {
+	if (NULL != vector_2)
+	{
 		printf("ERROR: trying to create vector_2 with 0 capacity\n");
 		return -1;
 	}
@@ -392,7 +395,6 @@ int main() {
 	if (NULL != data)
 		printf("ERROR: Last in vector_2 is not NULL\n");
 
-
 	printf("\n\n# Test Extract\n");
 	data = v->ops_->extractFirst(vector_2);
 	if (NULL != data)
@@ -423,13 +425,11 @@ int main() {
 	error_type = v->ops_->reset(vector_2);
 	TESTBASE_printFunctionResult(vector_2, (u8 *)"reset vector_2 (NOT VALID)", error_type);
 
-
 	printf("\n\n# Test Destroy\n");
 	error_type = v->ops_->destroy(vector_2);
 	TESTBASE_printFunctionResult(vector_2, (u8 *)"destroy vector_2 (NOT VALID)", error_type);
 	error_type = v->ops_->destroy(vector_3);
 	TESTBASE_printFunctionResult(vector_3, (u8 *)"destroy vector_3 (NOT VALID)", error_type);
-
 
 	// Work is done, clean the system
 	error_type = v->ops_->destroy(vector_1);

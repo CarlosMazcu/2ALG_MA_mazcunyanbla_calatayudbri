@@ -95,10 +95,10 @@ s16 VECTOR_destroy(Vector* vector)
   if(NULL == vector->storage_)
   {
     MM->free(vector);
-    return kErrorCode_StorageNull;
+    return kErrorCode_Ok;
   }
   
-  for(u16 i = vector->head_; i < vector->tail_; i++)
+  for(u16 i = vector->head_; i < vector->capacity_; i++)
   {
     vector->storage_[i].ops_->reset(&vector->storage_[i]);
   }
@@ -123,12 +123,12 @@ static s16 VECTOR_softReset(Vector *vector)
     vector->storage_[i].ops_->softReset(&vector->storage_[i]);
   }
   vector->tail_ = 0;
+
+  return kErrorCode_Ok;
 }
 
 static s16 VECTOR_reset(Vector *vector)
 {
-  /*NO FUNCTIONA :(*/
-
   if(NULL == vector)
   {
     return kErrorCode_VectorNull;
@@ -137,11 +137,14 @@ static s16 VECTOR_reset(Vector *vector)
   {
     return kErrorCode_StorageNull;
   }
-  for (u16 i = vector->head_; i < vector->tail_; i++)
+  for (s16 i = vector->head_; i < vector->tail_; i++)
   {
     vector->storage_[i].ops_->reset(&vector->storage_[i]);
   }
+  vector->head_ = 0;
   vector->tail_ = 0; 
+
+  return kErrorCode_Ok;
 }
 
 u16 VECTOR_capacity(Vector *vector)
@@ -187,7 +190,7 @@ boolean VECTOR_isFull(Vector *vector)
   {
     return kErrorCode_VectorNull;
   }
-  if(vector->tail_ == vector->capacity_)
+  if(vector->tail_ >= vector->capacity_)
   {
     return True;
   }else{
@@ -275,6 +278,10 @@ s16 VECTOR_insertAt(Vector *vector, void *data, u16 bytes, u16 position)
   {
     return kErrorCode_VectorFull;
   }
+  if(position > vector->capacity_)
+  {
+    return -50;  //introducir error code
+  }
   if (position >= vector->tail_)
   {
     VECTOR_insertLast(vector, data, bytes);
@@ -282,7 +289,7 @@ s16 VECTOR_insertAt(Vector *vector, void *data, u16 bytes, u16 position)
   for (u16 i = vector->tail_; i > position; i--)
   {
     /* MEMNODE_setData(vector->storage_[i + 1], vector->storage_[i].data_, vector->storage_[i].size_); */
-    vector->storage_[i + 1].ops_->setData(&vector->storage_[i], vector->storage_[i - 1].data_, vector->storage_[i - 1].size_);
+    vector->storage_[i + 1].ops_->setData(&vector->storage_[i], vector->storage_[i - 1].data_, vector->storage_[i - 1].size_); 
   }
   /* MEMNODE_setData(vector->storage_[position], data, bytes); */
   vector->storage_[position].ops_->setData(&vector->storage_[position], data, bytes);
@@ -433,20 +440,45 @@ s16 VECTOR_resize(Vector *vector, u16 new_capacity)
   {
     return kErrorCode_StorageNull;
   }
-  MemoryNode *storage_tmp = MM->malloc(sizeof(MemoryNode) * new_capacity);
-  //copy of storage in temporal storage with resize
-  for(int i = 0; i < new_capacity; i++)
-  {
-    MEMNODE_createLite(&storage_tmp[i]);
 
+  if(0 == new_capacity)
+  {
+    return kErrorCode_SizeZero;
   }
-  for(int i = vector->head_; i < vector->tail_; i++)
+
+  MemoryNode *storage_tmp = (MemoryNode *)MM->malloc(sizeof(MemoryNode) * new_capacity);
+
+  if(NULL == storage_tmp)
   {
-/*     MEMNODE_setData(storage_tmp[i], vector->storage_[i].data_, vector->storage_[i].size_); */
+    return kErrorCode_VectorNull; //cambiar codigo de eroor
+  }
+  //copy of storage in temporal storage with resize
+  if(new_capacity > vector->tail_)
+  {
+    for(int i = 0; i < vector->tail_; i++)
+    {
+      MEMNODE_createLite(&storage_tmp[i]);
+      storage_tmp[i].ops_->setData(&storage_tmp[i], vector->storage_[i].data_, vector->storage_[i].size_);
+    }
 
-     storage_tmp[i].ops_->setData(&storage_tmp[i], vector->storage_[i].data_, vector->storage_[i].size_);
+    for(int i = vector->tail_; i < new_capacity; i++)
+    {
+      MEMNODE_createLite(&storage_tmp[i]);
+    } 
+  }else
+  {
+    for (int i = 0; i < new_capacity; i++)
+    {
+      MEMNODE_createLite(&storage_tmp[i]);
+      storage_tmp[i].ops_->setData(&storage_tmp[i], vector->storage_[i].data_, vector->storage_[i].size_);
+    }
 
-     
+    for(int i = new_capacity; i = vector->tail_; i++)
+    {
+      MEMNODE_createLite(&storage_tmp[i]);
+      vector->storage_[i].ops_->reset(&vector->storage_[i]);
+    }
+      
   }
   //free old storage
   MM->free(vector->storage_);
@@ -464,22 +496,35 @@ s16 VECTOR_concat(Vector* vector, Vector *vector_src)
     return kErrorCode_VectorEmpty;
   }
   
-  if(vector->storage_ < vector->tail_ + vector_src->tail_)
+  if (NULL == vector->storage_ || NULL == vector_src->storage_)
   {
-    return kErrorCode_NotEnoughCapacity;
+    return kErrorCode_StorageNull;
   }
-
-  for(u16 i=0; i < vector_src->tail_; i++)
+  MemoryNode *aux = (MemoryNode *)MM->malloc(sizeof(MemoryNode) * (vector->capacity_ + vector_src->capacity_));
+  if (NULL == aux)
   {
-    MemoryNode *aux = (MemoryNode *)MM->malloc(sizeof(MemoryNode));
+    return -50; //poner un error code
+  }
+  
+  for (u16 i = 0; i < vector->tail_; i++)
+  {
     MEMNODE_createLite(&aux[i]);
-    *aux = vector_src->storage_[i];
-
-    vector->storage_[vector->tail_ + i] = *aux;
+    aux[i].ops_->setData(&aux[i],vector->storage_[i].data_,vector->storage_[i].size_);
   }
-
+  
+  for(u16 i= vector->tail_; i < vector->tail_ + vector_src->tail_; i++)
+  {
+    MEMNODE_createLite(&aux[i]);
+    aux[i].ops_->memCopy(&aux[i], vector_src->storage_[i].data_, vector_src->storage_[i].size_);
+  }
+    vector->capacity_ += vector_src->capacity_;
     vector->tail_ += vector_src->tail_;
 
+    MM->free(vector->storage_);
+
+    vector->storage_ = aux;
+
+    
   return kErrorCode_Ok;
 }
 
