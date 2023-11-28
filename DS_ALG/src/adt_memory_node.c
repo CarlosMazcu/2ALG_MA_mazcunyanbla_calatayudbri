@@ -187,7 +187,6 @@ s16 MEMNODE_free(MemoryNode *node)
   return kErrorCode_Ok;
 }
 
-
 s16 MEMNODE_softFree(MemoryNode *node)
 {
 
@@ -218,27 +217,6 @@ s16 MEMNODE_memSet(MemoryNode *node, u8 value)
   memset(node->data_, value, node->size_);
   return kErrorCode_Ok;
 }
-/*
-s16 MEMNODE_memCopy(MemoryNode *node, void *src, u16 bytes)
-{
-  if(NULL == node)
-  {
-    return kErrorCode_NodeNull;
-  }
-  if(NULL == node->data_ || NULL == src)
-  {
-    return kErrorCode_DataNull;
-  }
-/*   if(bytes < 0)
-  {
-    return kErrorCode_SizeMismatch;
-  } 
-  
-  memcpy(node->data_, src, bytes);
-
-  return kErrorCode_Ok;
-
-}*/
 
 s16 MEMNODE_memCopy(MemoryNode* node, void* src, u16 bytes)
 {
@@ -346,11 +324,5 @@ void MEMNODE_print(MemoryNode *node)
       printf("%c", aux[i]);
   }
   printf("\n");
-  //unsigned char *data = (unsigned char*)node->data_;
-  //for(u16 i = 0; i < node->size_; i++)
-  //{
-    //printf("%02X ", data[i]);
-  //}
-  //printf("\n");
   return kErrorCode_Ok;
 }

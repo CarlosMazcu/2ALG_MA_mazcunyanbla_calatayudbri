@@ -294,10 +294,8 @@ s16 VECTOR_insertAt(Vector *vector, void *data, u16 bytes, u16 position)
   MEMNODE_createLite(&vector->storage_[vector->tail_]);
   for (u16 i = vector->tail_; i > position; i--)
   {
-    /* MEMNODE_setData(vector->storage_[i + 1], vector->storage_[i].data_, vector->storage_[i].size_); */
     vector->storage_[i].ops_->setData(&vector->storage_[i], vector->storage_[i - 1].data_, vector->storage_[i - 1].size_); 
   }
-  /* MEMNODE_setData(vector->storage_[position], data, bytes); */
   vector->storage_[position].ops_->setData(&vector->storage_[position], data, bytes);
   vector->tail_++;
   return kErrorCode_Ok;
@@ -344,7 +342,6 @@ void *VECTOR_extractLast(Vector *vector)
   }
 
   void *tmp = vector->storage_[vector->tail_ - 1].data_;
-  /* MEMNODE_softReset(vector->storage_[vector->tail_ - 1]); */
   vector->storage_[vector->tail_ - 1].ops_->softReset(&vector->storage_[vector->tail_ - 1]);
   vector->tail_--;
 
@@ -373,10 +370,8 @@ void *VECTOR_extractAt(Vector *vector, u16 position)
 
   for (int i = position; i < vector->tail_; i++)
   {
-    /* MEMNODE_setData(vector->storage_[i], vector->storage_[i + 1].data_, vector->storage_[i + 1].size_); */
     vector->storage_[i].ops_->setData(&vector->storage_[i], vector->storage_[i + 1].data_, vector->storage_[i + 1].size_);
   }
-  /* MEMNODE_softReset(vector->storage_[vector->tail_ - 1]); */
   vector->storage_[vector->tail_ - 1].ops_->softReset(&vector->storage_[vector->tail_ - 1]);
   vector->tail_--;
   return tmp;
@@ -499,7 +494,6 @@ s16 VECTOR_resize(Vector *vector, u16 new_capacity)
   return kErrorCode_Ok;
 }
 
-
 s16 VECTOR_concat(Vector* vector, Vector *vector_src)
 {
   if(NULL == vector || NULL == vector_src)
@@ -541,7 +535,6 @@ s16 VECTOR_concat(Vector* vector, Vector *vector_src)
   return kErrorCode_Ok; 
 }
 
-
 void VECTOR_print(Vector* vector)
 {
   if(NULL == vector)
@@ -569,7 +562,6 @@ void VECTOR_print(Vector* vector)
       
     }
     printf("\n");
-/* destroy concat softreset reset resize*/
   }
   printf("\n");
   printf("\n");
