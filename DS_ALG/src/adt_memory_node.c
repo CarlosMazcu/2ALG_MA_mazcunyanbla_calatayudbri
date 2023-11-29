@@ -1,8 +1,10 @@
-// adt_memory_node.c
-// Escuela Superior de Arte y Tecnologia
-// Algoritmos & Inteligencia Artificial
-// ESAT 2020-2021
-//
+/**
+ * @file adt_memory_node.c
+ * @brief
+ * @author <mazcunyanbla@esat-alumni.com> <calatayudbri@esat-alumni.com>
+ * @date 2023-11-28
+ * @version 1.0
+ */
 
 #include <stdio.h>
 #include <stdlib.h>

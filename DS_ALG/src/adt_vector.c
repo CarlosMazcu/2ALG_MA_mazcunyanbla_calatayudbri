@@ -1,8 +1,10 @@
-// adt_vector.h
-// Escuela Superior de Arte y Tecnologia
-// Algoritmos & Inteligencia Artificial
-// ESAT 2020-2021
-//
+/**
+ * @file adt_vector.c
+ * @brief
+ * @author <mazcunyanbla@esat-alumni.com> <calatayudbri@esat-alumni.com>
+ * @date 2023-11-28
+ * @version 1.0
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
