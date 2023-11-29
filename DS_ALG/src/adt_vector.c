@@ -435,6 +435,8 @@ s16 VECTOR_traverse(Vector *vector, void (*callback)(MemoryNode *))
   {
     callback(&vector->storage_[i]);
   }
+
+  return kErrorCode_Ok;
 }
 
 s16 VECTOR_resize(Vector *vector, u16 new_capacity)
