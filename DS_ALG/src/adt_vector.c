@@ -107,6 +107,7 @@ s16 VECTOR_destroy(Vector* vector)
       vector->storage_[i].ops_->reset(&vector->storage_[i]);
     }
   }
+
   MM->free(vector->storage_);
   MM->free(vector);
 
@@ -175,11 +176,11 @@ u16 VECTOR_length(Vector *vector)
 
 boolean VECTOR_isEmpty(Vector *vector)
 {
-  if (NULL == vector)
-  {
-    return kErrorCode_VectorNull;
-  }
-  if (vector->head_ == vector->tail_)
+  // if (NULL == vector)
+  // {
+  //   return kErrorCode_VectorNull;
+  // }
+  if (vector->head_ == vector->tail_ && NULL!= vector)
   {
     return True;
   }
@@ -191,11 +192,11 @@ boolean VECTOR_isEmpty(Vector *vector)
 
 boolean VECTOR_isFull(Vector *vector)
 {
-  if (NULL == vector)
-  {
-    return kErrorCode_VectorNull;
-  }
-  if(vector->tail_ >= vector->capacity_)
+  // if (NULL == vector)
+  // {
+  //   return kErrorCode_VectorNull;
+  // }
+  if(vector->tail_ >= vector->capacity_ && NULL != vector)
   {
     return True;
   }else{
@@ -419,7 +420,7 @@ void *VECTOR_at(Vector *vector, u16 position)
   {
     return NULL;
   }
-  if (position >= vector->tail_)
+  if (position >= vector->tail_ || position >=vector->capacity_ || position <= vector->head_)
   {
     return NULL;
   }
@@ -433,6 +434,10 @@ s16 VECTOR_traverse(Vector *vector, void (*callback)(MemoryNode *))
   {
     return kErrorCode_VectorNull;
   }
+  if(NULL == vector->storage_)
+  {
+    return kErrorCode_StorageNull;
+  }
   for(s16 i = vector->head_; i < vector->tail_; i++)
   {
     callback(&vector->storage_[i]);
@@ -445,7 +450,7 @@ s16 VECTOR_resize(Vector *vector, u16 new_capacity)
 {
   if(NULL == vector)
   {
-    return kErrorCode_VectorFull;
+    return kErrorCode_VectorNull;
   }
   if(NULL == vector->storage_)
   {
@@ -464,7 +469,7 @@ s16 VECTOR_resize(Vector *vector, u16 new_capacity)
     return kErrorCode_VectorNull;
   }
   //copy of storage in temporal storage with resize
-  if(new_capacity > vector->tail_)
+  if(new_capacity > vector->capacity_)
   {
     for(int i = 0; i < vector->tail_; i++)
     {
@@ -484,9 +489,9 @@ s16 VECTOR_resize(Vector *vector, u16 new_capacity)
       storage_tmp[i].ops_->setData(&storage_tmp[i], vector->storage_[i].data_, vector->storage_[i].size_);
     }
 
-    for(int i = new_capacity; i > vector->tail_; i--)
+    for(int i = new_capacity; i < vector->tail_; i++)
     {
-      storage_tmp[i].ops_->reset(&vector->storage_[i]);
+      storage_tmp->ops_->reset(&vector->storage_[i]);
     }
     vector->tail_ = new_capacity;
   }
