@@ -349,7 +349,7 @@ int main()
 	TESTBASE_printFunctionResult(vector_3, (u8 *)"destroy vector_3", error_type);
 	printf("vector_3:\n");
 	v->ops_->print(vector_3);
-	MM->status();
+
 	printf("\n\n# Test Resize\n");
 	printf("\t vector_1 resize\n");
 	error_type = v->ops_->resize(vector_1, 3);

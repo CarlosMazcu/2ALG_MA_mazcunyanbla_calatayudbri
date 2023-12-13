@@ -176,11 +176,7 @@ u16 VECTOR_length(Vector *vector)
 
 boolean VECTOR_isEmpty(Vector *vector)
 {
-  // if (NULL == vector)
-  // {
-  //   return kErrorCode_VectorNull;
-  // }
-  if (vector->head_ == vector->tail_ && NULL!= vector)
+  if (NULL != vector && vector->head_ == vector->tail_)
   {
     return True;
   }
@@ -192,15 +188,15 @@ boolean VECTOR_isEmpty(Vector *vector)
 
 boolean VECTOR_isFull(Vector *vector)
 {
-  // if (NULL == vector)
-  // {
-  //   return kErrorCode_VectorNull;
-  // }
-  if(vector->tail_ >= vector->capacity_ && NULL != vector)
+
+  if (NULL != vector && vector->tail_ >= vector->capacity_)
   {
     return True;
+
   }else{
+    
     return False;
+
   }
 }
 
@@ -287,16 +283,10 @@ s16 VECTOR_insertAt(Vector *vector, void *data, u16 bytes, u16 position)
   {
     return kErrorCode_VectorFull;
   }
-  if(position > vector->capacity_)
-  {
-    return kErrorCode_NotEnoughCapacity;
-  }
   if (position >= vector->tail_)
   {
-    VECTOR_insertLast(vector, data, bytes);
-    return kErrorCode_Ok;
+    return VECTOR_insertLast(vector, data, bytes);
   }
-  //MEMNODE_createLite(&vector->storage_[vector->tail_]);
   for (u16 i = vector->tail_; i > position; i--)
   {
     vector->storage_[i].ops_->setData(&vector->storage_[i], vector->storage_[i - 1].data_, vector->storage_[i - 1].size_); 
@@ -371,6 +361,7 @@ void *VECTOR_extractAt(Vector *vector, u16 position)
   {
     return NULL;
   }
+
   void *tmp = vector->storage_[position].data_;
 
   for (int i = position; i < vector->tail_; i++)
@@ -393,6 +384,12 @@ void *VECTOR_first(Vector *vector)
     return NULL;
   }
 
+  if (NULL == vector->storage_[vector->head_].data_)
+  {
+
+    return NULL;
+  }
+
   return vector->storage_[vector->head_].data_; 
 }
 
@@ -403,6 +400,10 @@ void *VECTOR_last(Vector *vector)
     return NULL;
   }
   if (NULL == vector->storage_)
+  {
+    return NULL;
+  }
+  if(NULL == vector->storage_[vector->tail_ - 1].data_)
   {
     return NULL;
   }
@@ -468,6 +469,11 @@ s16 VECTOR_resize(Vector *vector, u16 new_capacity)
   {
     return kErrorCode_VectorNull;
   }
+  
+  if(new_capacity == vector->capacity_)
+  {
+    return kErrorCode_Ok;
+  }
   //copy of storage in temporal storage with resize
   if(new_capacity > vector->capacity_)
   {
@@ -481,7 +487,7 @@ s16 VECTOR_resize(Vector *vector, u16 new_capacity)
     {
       MEMNODE_createLite(&storage_tmp[i]);
     } 
-  }else
+  }else if(new_capacity < vector->capacity_)
   {
     for (int i = 0; i < new_capacity; i++)
     {
