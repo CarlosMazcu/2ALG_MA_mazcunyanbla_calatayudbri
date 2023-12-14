@@ -107,7 +107,7 @@ void* MEMNODE_data(MemoryNode *node)
   return node->data_;
 }
 
-u16	MEMNODE_size(MemoryNode *node) { // returns data size
+u16	MEMNODE_size(MemoryNode *node) { 
   if (NULL == node)
   {
   #ifdef VERBOSE_
@@ -180,11 +180,10 @@ s16 MEMNODE_free(MemoryNode *node)
   
 
     MM->free(node->data_);
-    // node->data_ = NULL;
-   // node->size_ = 0;
+   
 
     MM->free(node);  
-    // node = NULL;
+    
 
   return kErrorCode_Ok;
 }
@@ -198,7 +197,7 @@ s16 MEMNODE_softFree(MemoryNode *node)
   }
 
   MM->free(node);
-  //node = NULL;
+
   return kErrorCode_Ok;
 }
 

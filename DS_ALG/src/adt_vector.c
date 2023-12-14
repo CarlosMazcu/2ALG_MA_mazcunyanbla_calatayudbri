@@ -222,7 +222,7 @@ s16 VECTOR_insertFirst(Vector *vector, void *data, u16 bytes)
   {
     return kErrorCode_VectorFull;
   }
-  //MEMNODE_createLite(&vector->storage_[vector->tail_]);
+ 
   for (u16 i = vector->tail_; i > vector->head_; i--)
   {
     vector->storage_[0].ops_->setData(&vector->storage_[i], vector->storage_[i - 1].data_, vector->storage_[i - 1].size_);
@@ -255,7 +255,7 @@ s16 VECTOR_insertLast(Vector *vector, void *data, u16 bytes)
   {
     return kErrorCode_VectorFull;
   }
-  //MEMNODE_createLite(&vector->storage_[vector->tail_]);
+  
   vector->storage_[vector->tail_].ops_->setData(&vector->storage_[vector->tail_], data, bytes);
   vector->tail_++;
   return kErrorCode_Ok;
