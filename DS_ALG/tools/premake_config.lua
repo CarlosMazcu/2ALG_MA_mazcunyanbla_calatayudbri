@@ -15,7 +15,7 @@ PROJECT_NAMES = {
   "PR00_MemoryNode",
   "PR01_Vector",
   --"PR03_CircularVector",
-  --"PR04_MovableVector",
+  "PR04_MovableVector",
   --"PR05_List",
   --"PR06_DLList",
   --"PR07_CircularList",
@@ -146,3 +146,8 @@ project "PR01_Vector"
     path.join(PROJ_DIR, "tests/test_vector.c"),
   }
     --"PR04_MovableVector",]]--
+
+project "PR04_MovableVector"
+  files {
+    
+  }
