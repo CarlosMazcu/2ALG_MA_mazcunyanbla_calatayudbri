@@ -135,6 +135,16 @@ project "PR01_Vector"
     path.join(PROJ_DIR, "src/adt_vector.c"),
     path.join(PROJ_DIR, "tests/test_vector.c"),
   }
+
+  project "PR02_MovableVector"
+  files {
+    path.join(PROJ_DIR, "include/adt_memory_node.h"),
+    path.join(PROJ_DIR, "src/adt_memory_node.c"),
+    path.join(PROJ_DIR, "include/adt_mh_vector.h"),
+    path.join(PROJ_DIR, "src/adt_mh_vector.c"),
+    path.join(PROJ_DIR, "tests/test_vector.c"),
+  }
+  
 --[[
 
   project "PR03_CircularVector"
@@ -147,11 +157,3 @@ project "PR01_Vector"
   }
     --"PR04_MovableVector",]]--
 
-project "PR02_MovableVector"
-  files {
-    path.join(PROJ_DIR, "include/adt_memory_node.h"),
-    path.join(PROJ_DIR, "src/adt_memory_node.c"),
-    path.join(PROJ_DIR, "include/adt_mh_vector.h"),
-    path.join(PROJ_DIR, "src/adt_mh_vector.c"),
-    path.join(PROJ_DIR, "tests/test_vector.c"),
-  }
