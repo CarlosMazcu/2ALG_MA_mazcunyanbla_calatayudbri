@@ -120,6 +120,7 @@ s16 Mh_VECTOR_destroy(Mh_Vector* vector)
   return kErrorCode_Ok;
 }
 
+
 s16 Mh_VECTOR_softReset(Mh_Vector *vector)
 {
   if (NULL == vector)
