@@ -16,7 +16,7 @@ PROJECT_NAMES = {
   "PR01_Vector",
   "PR02_MovableVector",
   --"PR03_CircularVector",
-  --"PR05_List",
+  "PR05_List",
   --"PR06_DLList",
   --"PR07_CircularList",
   --"PR08_CircularDLList",
@@ -143,6 +143,15 @@ project "PR01_Vector"
     path.join(PROJ_DIR, "include/adt_mh_vector.h"),
     path.join(PROJ_DIR, "src/adt_mh_vector.c"),
     path.join(PROJ_DIR, "tests/test_vector.c"),
+  }
+
+  project "PR05_MovableVector"
+  files {
+    path.join(PROJ_DIR, "include/adt_memory_node.h"),
+    path.join(PROJ_DIR, "src/adt_memory_node.c"),
+    path.join(PROJ_DIR, "include/adt_list.h"),
+    path.join(PROJ_DIR, "src/adt_list.c"),
+    path.join(PROJ_DIR, "tests/test_adt_list.c"),
   }
   
 --[[
