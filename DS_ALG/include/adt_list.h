@@ -6,10 +6,11 @@
  * @version 1.0
  */
 
-#ifndef __ADT_MEMORY_NODE_H__
-#define __ADT_MEMORY_NODE_H__
+#ifndef __ADT_LIST_H__
+#define __ADT_LIST_H__
 
 #include "EDK_MemoryManager/edk_platform_types.h"
+//#include "adt_memory_node.h"
 
 // Memory Node type
 typedef struct list_s {
@@ -36,9 +37,9 @@ struct list_ops_s {
 
   s16(*resize)(List *list, u16 new_capacity);
 
-  u16(*capacity)(List *list);
+  u16(*capacity)(List *list);//
 
-  u16(*length)(List *list);
+  u16(*length)(List *list);//
 
   boolean(*isEmpty)(List *list);
 
@@ -48,7 +49,7 @@ struct list_ops_s {
 
   void*(*last)(List *list);
 
-  void*(*at)(List *list);
+  void*(*at)(List *list, u16 index);
 
   s16(*insertFirst)(List *list, MemoryNode *node);
 
@@ -56,13 +57,13 @@ struct list_ops_s {
 
   s16(*insertAt)(List *list, MemoryNode *node, u16 index);
 
-  s16(*extractFirst)(List *list, MemoryNode *node);
+  s16(*extractFirst)(List *list);
 
-  s16(*extractLast)(List *list, MemoryNode *node);
+  s16(*extractLast)(List *list);
 
-  s16(*extractAt)(List *list, MemoryNode *node, u16 index);
+  s16(*extractAt)(List *list, u16 index);
 
-  s16(*concat)(List *list, List *list);
+  s16(*concat)(List *list, List *next_list);
 
   s16 (*traverse)(List *list, void (*callback)(MemoryNode *));
 

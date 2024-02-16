@@ -26,7 +26,8 @@ typedef enum
   kErrorCode_VectorEmpty = -23,
   kErrorCode_PositionMismatch = -24,
   kErrorCode_NotEnoughCapacity = -25,
-}
-ErrorCode;
+  kErrorCode_ListNull = -30,
+  kErrorCode_FirstNull = -31,
+}ErrorCode;
 
 #endif // __COMMON_DEF_H__

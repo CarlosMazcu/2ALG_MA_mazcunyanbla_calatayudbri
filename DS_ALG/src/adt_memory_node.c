@@ -178,10 +178,7 @@ s16 MEMNODE_free(MemoryNode *node)
     return kErrorCode_Ok;
   }
   
-
     MM->free(node->data_);
-   
-
     MM->free(node);  
     
 
