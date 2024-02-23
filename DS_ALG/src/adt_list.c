@@ -75,9 +75,11 @@ MemoryNode* LIST_next(MemoryNode *node)
 
 s16 LIST_setNext(MemoryNode *node, MemoryNode *next)
 {
+    if(NULL == node || NULL == next){
+        return kErrorCode_NodeNull;
+    }
     node->next_ = next;
-
-    return 0;
+    return kErrorCode_Ok;
 }
 
 /*Comprobar si es correcto*/
@@ -225,12 +227,12 @@ boolean LIST_isFull(List *list)
 {
     if(list == NULL)
     {
-        return kErrorCode_ListNull;
+        return False;
     }
     if(list->length_ != list->capacity_){
-        return 0;
+        return False;
     }
-    return 1;
+    return True;
 }
 
 void* LIST_first(List *list)
