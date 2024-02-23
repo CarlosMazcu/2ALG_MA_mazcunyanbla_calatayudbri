@@ -67,7 +67,8 @@ MemoryNode* LIST_next(MemoryNode *node)
 {
     if(NULL == node)
     {
-        return kErrorCode_NodeNull;
+
+        return NULL;
     }
     return node->next_;
 }
@@ -99,14 +100,56 @@ s16 LIST_destroy(List *list) {
 
 s16 LIST_softReset(List *list)
 {
-  MemoryNode *aux = list;
-  MemoryNode *aux_next = aux->next_;
+  if (list == NULL)
+    {
+        return kErrorCode_ListNull;
+    }
+
+    // delete all nodes
+    MemoryNode *current_node = list->head_;
+    MemoryNode *next_node;
+
+    while (current_node != NULL)
+    {
+        next_node = current_node->next_;
+        free(current_node);
+        current_node = next_node;
+    }
+    list->head_ = NULL;
+    list->tail_ = NULL;
+    list->length_ = 0;
+    list->capacity_ = 0;
+
+    return kErrorCode_Ok;
 
   
 }
 
 s16 LIST_reset(List *list)
-{}
+{
+      if (list == NULL)
+    {
+        return kErrorCode_ListNull;
+    }
+
+    // delete all nodes
+    MemoryNode *current_node = list->head_;
+    MemoryNode *next_node;
+
+    while (current_node != NULL)
+    {
+        next_node = current_node->next_;
+        free(current_node->data_);
+        free(current_node);
+        current_node = next_node;
+    }
+    list->head_ = NULL;
+    list->tail_ = NULL;
+    list->length_ = 0;
+    list->capacity_ = 0;
+
+    return kErrorCode_Ok;
+}
 
 s16 LIST_resize(List *list, u16 new_capacity)
 {
@@ -114,12 +157,39 @@ s16 LIST_resize(List *list, u16 new_capacity)
     {
         return kErrorCode_ListNull;
     }
+    
     if(list->capacity_ <= new_capacity)
     {
         list->capacity_ = new_capacity;
         return kErrorCode_Ok;
     }
-    //TODO falta if new_capacity < capacity
+
+    if(list->capacity_ > new_capacity)
+    {
+
+        MemoryNode *current_node = list->head_;
+        MemoryNode *next_node;
+
+        while (current_node != NULL)
+        {
+            next_node = current_node->next_;
+
+            if (next_node != NULL)
+            {
+                current_node->next_ = NULL;
+                free(next_node->data_);
+                free(next_node);
+                list->length_--;
+                list->capacity_--;
+            }
+
+            current_node = current_node->next_;
+        }
+
+        list->capacity_ = new_capacity;
+
+        return kErrorCode_Ok;
+    }
 }
 
 u16 LIST_capacity(List *list)
@@ -143,12 +213,12 @@ boolean LIST_isEmpty(List *list)
 {
     if(list == NULL)
     {
-        return kErrorCode_ListNull;
+        return False;
     }
     if(list->length_ != 0){
-        return 0;
+        return False;
     }
-    return 1;
+    return True;
 }
 
 boolean LIST_isFull(List *list)
@@ -211,58 +281,329 @@ void* LIST_at(List *list, u16 index)
 s16 LIST_insertFirst(List *list, MemoryNode *node)
 {
 
-    return 0;
+    if (NULL == list)
+    {
+        return kErrorCode_ListNull;
+    }
+    if (NULL == node)
+    {
+        return kErrorCode_NodeNull;
+    }
+    if(list->length_ >= list->capacity_)
+    {
+        return kErrorCode_NotEnoughCapacity;
+    }
+    //check if the list is empty
+    if (LIST_isEmpty(list))
+    {
+        list->head_ = node;
+        list->tail_ = node;
+        list->length_ = 1;
+    }
+    else
+    {
+        //check if have enought capacity
+        node->next_ = list->head_;
+        list->head_ = node;
+        list->length_++;
+    }
+    return kErrorCode_Ok;
 }
 
 s16 LIST_insertLast(List *list, MemoryNode *node)
 {
+    if (list == NULL)
+    {
+        return kErrorCode_ListNull;
+    }
+    if (node == NULL)
+    {
+        return kErrorCode_NodeNull;
+    }
 
-    return 0;
+    if (list->length_ >= list->capacity_)
+    {
+        return kErrorCode_NotEnoughCapacity;
+    }
+
+    //check if the list is empty
+    if (LIST_isEmpty(list))
+    {
+        list->head_ = node;
+        list->tail_ = node;
+        list->length_ = 1;
+    }
+    else
+    {
+        // Insert node at end
+        list->tail_->next_ = node;
+        list->tail_ = node;
+        list->length_++;
+    }
+
+    return kErrorCode_Ok;
 }
 
 s16 LIST_insertAt(List *list, MemoryNode *node, u16 index)
 {
+    if (list == NULL)
+    {
+        return kErrorCode_ListNull;
+    }
+    if (node == NULL)
+    {
+        return kErrorCode_NodeNull;
+    }
 
-    return 0;
+    // Check index
+    if (index > list->length_)
+    {
+        return kErrorCode_InvalidIndex;
+    }
+
+    // check if is full
+    if (LIST_isFull(list))
+    {
+        return kErrorCode_NotEnoughCapacity;
+    }
+
+    // insert first
+    if (index == 0)
+    {
+        return LIST_insertFirst(list, node);
+    }
+
+    // insert last
+    if (index == list->length_)
+    {
+        return LIST_insertLast(list, node);
+    }
+
+    // Insert node in index
+    MemoryNode *current_node = list->head_;
+    u16 current_index = 0;
+    for(u16 i = 0; i < index - 1; i++)
+    {
+        current_node = current_node->next_;
+    }
+    node->next_ = current_node->next_;
+    current_node->next_ = node;
+    list->length_++;
+
+    return kErrorCode_Ok;
 }
 
 s16 LIST_extractFirst(List *list)
 {
+    if (list == NULL)
+    {
+        return kErrorCode_ListNull;
+    }
 
+    // check list empty
+    if (LIST_isEmpty(list))
+    {
+        return kErrorCode_ListEmpty;
+    }
+
+    MemoryNode *node_to_extract = list->head_;
+    list->head_ = list->head_->next_;
+
+    if (list->length_ == 1)
+    {
+        list->tail_ = NULL;
+    }
+
+    free(node_to_extract->data_);
+    free(node_to_extract);
+
+    list->length_--;
 
     return 0;
 }
 
 s16 LIST_extractLast(List *list)
 {
-    if(NULL == list){return kErrorCode_ListNull;}
-    MemoryNode *aux = list->head_;
-    do{
-        aux = aux->next_;
-    }while(NULL == aux->next_);
-    //terminar
-    return 0;
+     if (list == NULL)
+    {
+        return kErrorCode_ListNull;
+    }
+
+    // Verifica si la lista está vacía
+    if (LIST_isEmpty(list))
+    {
+        return kErrorCode_ListEmpty;
+    }
+
+    // Check only 1 node
+    if (list->length_ == 1)
+    {
+        MemoryNode *node_to_extract = list->head_;
+        list->head_ = NULL;
+        list->tail_ = NULL;
+        free(node_to_extract->data_);
+        free(node_to_extract);
+    }
+    else
+    {
+        // search list tail - 1
+        MemoryNode *prev_node = NULL;
+        MemoryNode *current_node = list->head_;
+        while (current_node->next_ != NULL)
+        {
+            prev_node = current_node;
+            current_node = current_node->next_;
+        }
+
+        // Extract last and update tail
+        list->tail_ = prev_node;
+        list->tail_->next_ = NULL;
+        free(current_node->data_);
+        free(current_node);
+    }
+    list->length_--;
+
 }
 
 s16 LIST_extractAt(List *list, u16 index)
 {
+    if (list == NULL)
+    {
+        return kErrorCode_ListNull;
+    }
 
-    return 0;
+    if (index >= list->length_)
+    {
+        return kErrorCode_InvalidIndex;
+    }
+
+    if (LIST_isEmpty(list))
+    {
+        return kErrorCode_ListEmpty;
+    }
+
+    MemoryNode *node_to_extract;
+    
+    // If extractFirst
+    if (index == 0)
+    {
+       LIST_extractFirst(list);
+       return kErrorCode_Ok;
+    }
+    else
+    {
+        // search prev node to extract
+        MemoryNode *prev_node = NULL;
+        MemoryNode *current_node = list->head_;
+        u16 current_index = 0;
+
+        while (current_index < index)
+        {
+            prev_node = current_node;
+            current_node = current_node->next_;
+            current_index++;
+        }
+
+        node_to_extract = current_node;
+
+        // if extract last
+        if (index == list->length_ - 1)
+        {
+            LIST_extractLast(list);
+            return kErrorCode_Ok;
+        }
+        else
+        {
+            prev_node->next_ = current_node->next_;
+        }
+    }
+
+    // Free
+    free(node_to_extract->data_);
+    free(node_to_extract);
+
+    list->length_--;
+
+    return kErrorCode_Ok;
 }
 
 s16 LIST_concat(List *list, List *next_list)
 {
-    return 0;
+    if (list == NULL || next_list == NULL)
+    {
+        return kErrorCode_ListNull;
+    }
+    // check if next is empty
+    if (LIST_isEmpty(next_list))
+    {
+        return kErrorCode_Ok;
+    }
+    // check if list is empty and copy each other
+    if (LIST_isEmpty(list))
+    {
+        list->head_ = next_list->head_;
+        list->tail_ = next_list->tail_;
+        list->length_ = next_list->length_;
+    }
+    else
+    {
+        // Concat list :)
+        list->tail_->next_ = next_list->head_;
+        list->tail_ = next_list->tail_;
+        list->length_ += next_list->length_;
+    }
+
+    // freeeeeeee memory uwu
+    free(next_list);
+
+    return kErrorCode_Ok;
 }
 
 s16 LIST_traverse(List *list, void(*callback)(MemoryNode*))
 {
+    if (list == NULL)
+    {
+        return kErrorCode_ListNull;
+    }
+    MemoryNode *current_node = list->head_;
+    while (current_node != NULL)
+    {
+        // callback current node
+        callback(current_node);
+        // next node
+        current_node = current_node->next_;
+    }
 
+    return kErrorCode_Ok;
 }
 
 void LIST_print(List *list)
 {
-    
+    if (list == NULL)
+    {
+        printf("[List Info] List is NULL\n");
+        return;
+    }
+
+    printf("[List Info] Address: %p\n", (void *)list);
+    printf("[List Info] Length: %u\n", list->length_);
+    printf("[List Info] Capacity: %u\n", list->capacity_);
+
+    MemoryNode *current_node = list->head_;
+    int storage_index = 0;
+
+    while (current_node != NULL)
+    {
+        printf("[List Info] Storage [#%d]:\n", storage_index);
+        printf("[Node Info] Address: %p\n", (void *)current_node);
+        printf("[Node Info] Size: %u\n", current_node->size_);
+        printf("[Node Info] Data address: %p\n", current_node->data_);
+        printf("[Node Info] Data content: %d\n", *(int *)current_node->data_);
+        printf("[Node Info] Next address: %p\n", (void *)current_node->next_);
+
+        current_node = current_node->next_;
+        storage_index++;
+    }
 }
 
 

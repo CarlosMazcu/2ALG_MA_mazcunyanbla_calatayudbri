@@ -10,7 +10,7 @@
 #define __ADT_LIST_H__
 
 #include "EDK_MemoryManager/edk_platform_types.h"
-//#include "adt_memory_node.h"
+#include "adt_memory_node.h"
 
 // Memory Node type
 typedef struct list_s {

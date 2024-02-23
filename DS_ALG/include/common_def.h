@@ -28,6 +28,8 @@ typedef enum
   kErrorCode_NotEnoughCapacity = -25,
   kErrorCode_ListNull = -30,
   kErrorCode_FirstNull = -31,
+  kErrorCode_InvalidIndex = -32,
+  kErrorCode_ListEmpty = -33,
 }ErrorCode;
 
 #endif // __COMMON_DEF_H__
