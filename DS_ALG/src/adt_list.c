@@ -28,9 +28,9 @@ static boolean LIST_isFull(List *list);
 static void* LIST_first(List *list);
 static void* LIST_last(List *list);
 static void* LIST_at(List *list, u16 index);
-static s16 LIST_insertFirst(List *list, MemoryNode *node);
-static s16 LIST_insertLast(List *list, MemoryNode *node);
-static s16 LIST_insertAt(List *list, MemoryNode *node, u16 index);
+static s16 LIST_insertFirst(List* list, void* data, u16 size);
+static s16 LIST_insertLast(List* list, void* data, u16 size);
+static s16 LIST_insertAt(List *list, void* data, u16 size, u16 index);
 static s16 LIST_extractFirst(List *list);
 static s16 LIST_extractLast(List *list);
 static s16 LIST_extractAt(List *list, u16 index);
@@ -62,6 +62,27 @@ struct list_ops_s list_ops = { .next = LIST_next,
                                              .traverse = LIST_traverse,
                                              .print = LIST_print,
 };
+
+List* LIST_create(u16 capacity)
+{
+    if(0 >= capacity)
+    {
+        return NULL;
+    }
+    List *list_ = MM->malloc(sizeof(List));
+    if(NULL == list_)
+    {
+        return NULL;
+    }
+
+    list_->head_ = NULL;
+    list_->tail_ = NULL;
+    list_->capacity_ = capacity;
+    list_->length_ = 0;
+    list_->ops_ = &list_ops;
+    return list_;
+
+}
 
 MemoryNode* LIST_next(MemoryNode *node)
 {
@@ -141,14 +162,14 @@ s16 LIST_reset(List *list)
     while (current_node != NULL)
     {
         next_node = current_node->next_;
-        free(current_node->data_);
-        free(current_node);
+        MM->free(current_node->data_);
+        current_node->data_ = NULL;
+        MM->free(current_node);
         current_node = next_node;
     }
     list->head_ = NULL;
     list->tail_ = NULL;
     list->length_ = 0;
-    list->capacity_ = 0;
 
     return kErrorCode_Ok;
 }
@@ -190,8 +211,8 @@ s16 LIST_resize(List *list, u16 new_capacity)
 
         list->capacity_ = new_capacity;
 
-        return kErrorCode_Ok;
     }
+        return kErrorCode_Ok;
 }
 
 u16 LIST_capacity(List *list)
@@ -229,7 +250,7 @@ boolean LIST_isFull(List *list)
     {
         return False;
     }
-    if(list->length_ != list->capacity_){
+    if(list->length_ != list->capacity_ || list->length_ == 0){
         return False;
     }
     return True;
@@ -239,11 +260,11 @@ void* LIST_first(List *list)
 {
     if(list == NULL)
     {
-        return kErrorCode_ListNull;
+        return NULL;
     }
     if(list->head_ == NULL)
     {
-        return kErrorCode_FirstNull;
+        return NULL;
     }
     return list->head_->data_;
 }
@@ -280,24 +301,28 @@ void* LIST_at(List *list, u16 index)
     return aux;
 }
 
-s16 LIST_insertFirst(List *list, MemoryNode *node)
+s16 LIST_insertFirst(List *list, void *data, u16 size)
 {
 
     if (NULL == list)
     {
         return kErrorCode_ListNull;
     }
+    MemoryNode *node = MEMNODE_create();
     if (NULL == node)
     {
         return kErrorCode_NodeNull;
     }
-    if(list->length_ >= list->capacity_)
+    node->size_ = size;
+    node->data_ = data;
+    if(LIST_isFull(list))
     {
         return kErrorCode_NotEnoughCapacity;
     }
     //check if the list is empty
     if (LIST_isEmpty(list))
     {
+        node->next_ = NULL;
         list->head_ = node;
         list->tail_ = node;
         list->length_ = 1;
@@ -312,17 +337,19 @@ s16 LIST_insertFirst(List *list, MemoryNode *node)
     return kErrorCode_Ok;
 }
 
-s16 LIST_insertLast(List *list, MemoryNode *node)
+s16 LIST_insertLast(List* list, void* data, u16 size)
 {
     if (list == NULL)
     {
         return kErrorCode_ListNull;
     }
+    MemoryNode* node = MEMNODE_create();
     if (node == NULL)
     {
         return kErrorCode_NodeNull;
     }
-
+    node->size_ = size;
+    node->data_ = data;
     if (list->length_ >= list->capacity_)
     {
         return kErrorCode_NotEnoughCapacity;
@@ -331,6 +358,7 @@ s16 LIST_insertLast(List *list, MemoryNode *node)
     //check if the list is empty
     if (LIST_isEmpty(list))
     {
+        node->next_ = NULL;
         list->head_ = node;
         list->tail_ = node;
         list->length_ = 1;
@@ -346,16 +374,19 @@ s16 LIST_insertLast(List *list, MemoryNode *node)
     return kErrorCode_Ok;
 }
 
-s16 LIST_insertAt(List *list, MemoryNode *node, u16 index)
+s16 LIST_insertAt(List *list, void* data, u16 size, u16 index)
 {
     if (list == NULL)
     {
         return kErrorCode_ListNull;
     }
+    MemoryNode* node = MEMNODE_create();
     if (node == NULL)
     {
         return kErrorCode_NodeNull;
     }
+    node->size_ = size;
+    node->data_ = data;
 
     // Check index
     if (index > list->length_)
@@ -372,18 +403,17 @@ s16 LIST_insertAt(List *list, MemoryNode *node, u16 index)
     // insert first
     if (index == 0)
     {
-        return LIST_insertFirst(list, node);
+        return LIST_insertFirst(list, node->data_, node->size_);
     }
 
     // insert last
     if (index == list->length_)
     {
-        return LIST_insertLast(list, node);
+        return LIST_insertLast(list, node->data_, node->size_);
     }
 
     // Insert node in index
     MemoryNode *current_node = list->head_;
-    u16 current_index = 0;
     for(u16 i = 0; i < index - 1; i++)
     {
         current_node = current_node->next_;
@@ -465,6 +495,7 @@ s16 LIST_extractLast(List *list)
     }
     list->length_--;
 
+    return kErrorCode_Ok;
 }
 
 s16 LIST_extractAt(List *list, u16 index)
@@ -596,12 +627,18 @@ void LIST_print(List *list)
 
     while (current_node != NULL)
     {
+        u8* node_ptr_char = (u8*)current_node->data_;
         printf("[List Info] Storage [#%d]:\n", storage_index);
-        printf("[Node Info] Address: %p\n", (void *)current_node);
-        printf("[Node Info] Size: %u\n", current_node->size_);
-        printf("[Node Info] Data address: %p\n", current_node->data_);
-        printf("[Node Info] Data content: %d\n", *(int *)current_node->data_);
-        printf("[Node Info] Next address: %p\n", (void *)current_node->next_);
+        printf("        [Node Info] Address: %p\n", (void *)current_node);
+        printf("        [Node Info] Size: %u\n", current_node->size_);
+        printf("        [Node Info] Data address: %p\n", current_node->data_);
+        printf("        [Node Info] Data content: ");
+
+        for (int i = 0; i < current_node->size_; i++) {
+            printf("%c", node_ptr_char[i]);
+        }
+
+        printf("\n      [Node Info] Next address: %p\n", (void *)current_node->next_);
 
         current_node = current_node->next_;
         storage_index++;

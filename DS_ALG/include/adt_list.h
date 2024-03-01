@@ -161,7 +161,7 @@ struct list_ops_s {
  *         - kErrorCode_NodeNull: The provided node pointer is NULL.
  *         - kErrorCode_NotEnoughCapacity: The list does not have enough capacity to insert the node.
  */
-  s16(*insertFirst)(List *list, MemoryNode *node);
+  s16(*insertFirst)(List *list, void *data,u16 size);
 
  /**
  * @brief Inserts a node at the end of a list.
@@ -177,7 +177,7 @@ struct list_ops_s {
  *         - kErrorCode_NotEnoughCapacity: The list does not have enough capacity to insert the node.
  */
 
-  s16(*insertLast)(List *list, MemoryNode *node);
+  s16(*insertLast)(List* list, void* data, u16 size);
 
  /**
  * @brief Inserts a node at a specified index in a list.
@@ -194,7 +194,7 @@ struct list_ops_s {
  *         - kErrorCode_InvalidIndex: The specified index is invalid.
  *         - kErrorCode_NotEnoughCapacity: The list does not have enough capacity to insert the node.
  */
-  s16(*insertAt)(List *list, MemoryNode *node, u16 index);
+  s16(*insertAt)(List *list, void* data, u16 size, u16 index);
 
  /**
  * @brief Extracts the first node from a list.
@@ -275,6 +275,8 @@ struct list_ops_s {
   void(*print) (List *list);
 };
 
+List* LIST_create(u16 capacity); // Creates a new list
+
+
 
 #endif // __ADT_LIST_H__
-
