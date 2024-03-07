@@ -6,6 +6,7 @@
  * @version 1.0
  */
 
+// ALopezESAT: This might be a problem if you already have it somwhere else...
 #ifndef __ADT_VECTOR_H__
 #define __ADT_VECTOR_H__
 
