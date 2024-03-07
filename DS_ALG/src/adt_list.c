@@ -125,7 +125,7 @@ s16 LIST_destroy(List *list) {
 
 s16 LIST_softReset(List *list)
 {
-    if (NULL == List)
+    if (NULL == list)
     {
         return kErrorCode_ListNull;
     }
@@ -152,7 +152,7 @@ s16 LIST_softReset(List *list)
 
 s16 LIST_reset(List *list)
 {
-      if (list == NULL)
+      if (NULL == list)
     {
         return kErrorCode_ListNull;
     }
@@ -559,11 +559,6 @@ s16 LIST_concat(List* list, List* next_list)
         while (current_node != NULL)
         {
             MemoryNode* new_node = MEMNODE_create();
-            if (new_node == NULL)
-            {
-                LIST_softReset(list);
-                return kErrorCode_MemoryAllocationFailed;
-            }
             new_node->size_ = current_node->size_;
             new_node->data_ = current_node->data_;
             if (list->head_ == NULL)
