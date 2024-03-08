@@ -365,6 +365,10 @@ s16 LIST_insertAt(List *list, void* data, u16 size, u16 index)
     {
         return kErrorCode_ListNull;
     }
+    if (NULL == data)
+    {
+        return kErrorCode_DataNull;
+    }
     // check if is full
 
     if (LIST_isFull(list))
@@ -374,7 +378,7 @@ s16 LIST_insertAt(List *list, void* data, u16 size, u16 index)
     // Check index
     if (index > list->length_)
     {
-        return kErrorCode_InvalidIndex;
+        return list->ops_->insertLast(list, data, size);
     }
     MemoryNode* node = MEMNODE_create();
     if (NULL == node)
@@ -384,9 +388,6 @@ s16 LIST_insertAt(List *list, void* data, u16 size, u16 index)
     node->size_ = size;
     node->data_ = data;
 
-    
-
-    
     // insert first
     if (index == 0)
     {
@@ -439,7 +440,7 @@ s16 LIST_extractFirst(List *list)
 
     list->length_--;
 
-    return kErrorCode_Ok;
+    return extracted_data;
 }
 
 s16 LIST_extractLast(List *list)
@@ -454,13 +455,14 @@ s16 LIST_extractLast(List *list)
     {
         return kErrorCode_ListEmpty;
     }
-
+    void* extracted_data = NULL;
     // Check only 1 node
     if (list->length_ == 1)
     {
         MemoryNode *node_to_extract = list->head_;
         list->head_ = NULL;
         list->tail_ = NULL;
+        extracted_data = node_to_extract->data_;
         free(node_to_extract->data_);
         free(node_to_extract);
     }
@@ -478,15 +480,18 @@ s16 LIST_extractLast(List *list)
         // Extract last and update tail
         list->tail_ = prev_node;
         list->tail_->next_ = NULL;
+
+        extracted_data = current_node->data_;
         free(current_node->data_);
         free(current_node);
     }
     list->length_--;
 
-    return kErrorCode_Ok;
+    return extracted_data;
 }
 
-s16 LIST_extractAt(List *list, u16 index)
+
+s16 LIST_extractAt(List* list, u16 index)
 {
     if (NULL == list)
     {
@@ -495,7 +500,7 @@ s16 LIST_extractAt(List *list, u16 index)
 
     if (index >= list->length_)
     {
-        return kErrorCode_InvalidIndex;
+        return list->ops_->extractLast(list);
     }
 
     if (LIST_isEmpty(list))
@@ -508,16 +513,8 @@ s16 LIST_extractAt(List *list, u16 index)
     // If extractFirst
     if (index == 0)
     {
-       LIST_extractFirst(list);
-       return kErrorCode_Ok;
+       return LIST_extractFirst(list);
     }
-    // if extract last
-    if (index == list->length_ - 1)
-    {
-        LIST_extractLast(list);
-        return kErrorCode_Ok;
-    }
-    
     // search prev node to extract
     MemoryNode *prev_node = NULL;
     MemoryNode *current_node = list->head_;
@@ -530,14 +527,14 @@ s16 LIST_extractAt(List *list, u16 index)
         current_index++;
     }
     node_to_extract = current_node;
-    prev_node->next_ = current_node->next_;
+    //prev_node->next_ = current_node->next_;
     // Free
-    free(node_to_extract->data_);
-    free(node_to_extract);
-
+    void* extracted_data = node_to_extract->data_;
+    MM->free(node_to_extract);
+    current_node->next_ = NULL;
     list->length_--;
 
-    return kErrorCode_Ok;
+    return extracted_data;
 }
 
 
