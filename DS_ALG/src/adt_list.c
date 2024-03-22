@@ -31,9 +31,9 @@ static void* LIST_at(List *list, u16 index);
 static s16 LIST_insertFirst(List* list, void* data, u16 size);
 static s16 LIST_insertLast(List* list, void* data, u16 size);
 static s16 LIST_insertAt(List *list, void* data, u16 size, u16 index);
-static s16 LIST_extractFirst(List *list);
-static s16 LIST_extractLast(List *list);
-static s16 LIST_extractAt(List *list, u16 index);
+static void* LIST_extractFirst(List *list);
+static void* LIST_extractLast(List *list);
+static void* LIST_extractAt(List *list, u16 index);
 static s16 LIST_concat(List *list, List *other_list);
 static s16 LIST_traverse(List *list, void (*callback)(MemoryNode *));
 static void LIST_print(List *list);
@@ -223,7 +223,7 @@ boolean LIST_isEmpty(List *list)
 {
     if(NULL == list)
     {
-        return False;
+        return True;
     }
     if(list->length_ != 0){
         return False;
@@ -305,8 +305,9 @@ s16 LIST_insertFirst(List *list, void *data, u16 size)
     {
         return kErrorCode_NodeNull;
     }
-    node->size_ = size;
-    node->data_ = data;
+    node->ops_->setData(node, data,size);
+   // node->size_ = size;
+   // node->data_ = data;
     //check if the list is empty
     if (LIST_isEmpty(list))
     {
@@ -339,8 +340,9 @@ s16 LIST_insertLast(List* list, void* data, u16 size)
     {
         return kErrorCode_NodeNull;
     }
-    node->size_ = size;
-    node->data_ = data;
+    node->ops_->setData(node, data, size);
+    //node->size_ = size;
+    //node->data_ = data;
     //check if the list is empty
     if (LIST_isEmpty(list))
     {
@@ -361,6 +363,7 @@ s16 LIST_insertLast(List* list, void* data, u16 size)
 
 s16 LIST_insertAt(List *list, void* data, u16 size, u16 index)
 {
+    
     if (NULL == list)
     {
         return kErrorCode_ListNull;
@@ -385,8 +388,9 @@ s16 LIST_insertAt(List *list, void* data, u16 size, u16 index)
     {
         return kErrorCode_NodeNull;
     }
-    node->size_ = size;
-    node->data_ = data;
+    node->ops_->setData(node, data, size);
+    //node->size_ = size;
+    //node->data_ = data;
 
     // insert first
     if (index == 0)
@@ -411,91 +415,68 @@ s16 LIST_insertAt(List *list, void* data, u16 size, u16 index)
     list->length_++;
 
     return kErrorCode_Ok;
+    
 }
 
-s16 LIST_extractFirst(List *list)
+void* LIST_extractFirst(List *list)
 {
     if (NULL == list)
     {
-        return kErrorCode_ListNull;
+        return NULL;
     }
 
     // check list empty
     if (LIST_isEmpty(list))
     {
-        return kErrorCode_ListEmpty;
+        return NULL;
     }
 
     MemoryNode *node_to_extract = list->head_;
     list->head_ = list->head_->next_;
-
-    if (list->length_ == 1)
-    {
-        list->tail_ = NULL;
-    }
-
-    void* extracted_data = node_to_extract->data_;
-    free(node_to_extract->data_);
-    free(node_to_extract);
-
     list->length_--;
-
-    return extracted_data;
+    return node_to_extract;
 }
 
-s16 LIST_extractLast(List *list)
+void* LIST_extractLast(List *list)
 {
      if (NULL == list)
     {
-        return kErrorCode_ListNull;
+        return NULL;
     }
 
     // Verifica si la lista está vacía
     if (LIST_isEmpty(list))
     {
-        return kErrorCode_ListEmpty;
+        return NULL;
     }
-    void* extracted_data = NULL;
-    // Check only 1 node
-    if (list->length_ == 1)
+   
+    MemoryNode* last_node = list->tail_;
+    MemoryNode* aux = list->head_;
+
+    while (aux->next_ != last_node && aux != last_node)
     {
-        MemoryNode *node_to_extract = list->head_;
+        aux = aux->next_;
+    }
+
+    list->tail_ = aux;
+    list->tail_->next_ = NULL;
+    list->length_--;
+    if (LIST_isEmpty(list))
+    {
         list->head_ = NULL;
         list->tail_ = NULL;
-        extracted_data = node_to_extract->data_;
-        free(node_to_extract->data_);
-        free(node_to_extract);
     }
-    else
-    {
-        // search list tail - 1
-        MemoryNode *prev_node = NULL;
-        MemoryNode *current_node = list->head_;
-        while (current_node->next_ != NULL)
-        {
-            prev_node = current_node;
-            current_node = current_node->next_;
-        }
 
-        // Extract last and update tail
-        list->tail_ = prev_node;
-        list->tail_->next_ = NULL;
-
-        extracted_data = current_node->data_;
-        free(current_node->data_);
-        free(current_node);
-    }
-    list->length_--;
-
-    return extracted_data;
+    return last_node->data_;
 }
 
 
-s16 LIST_extractAt(List* list, u16 index)
+void* LIST_extractAt(List* list, u16 index)
 {
+    /*
     if (NULL == list)
     {
-        return kErrorCode_ListNull;
+        return NULL;
     }
 
     if (index >= list->length_)
@@ -505,7 +486,7 @@ s16 LIST_extractAt(List* list, u16 index)
 
     if (LIST_isEmpty(list))
     {
-        return kErrorCode_ListEmpty;
+        return NULL;
     }
 
     MemoryNode *node_to_extract;
@@ -535,6 +516,29 @@ s16 LIST_extractAt(List* list, u16 index)
     list->length_--;
 
     return extracted_data;
+    */
+    if (NULL == list)
+    {
+        return NULL;
+    }
+    if (list->ops_->isEmpty(list))
+    {
+        return NULL;
+    }
+    if (index >= list->length_)
+    {
+        return NULL;
+    }
+    MemoryNode* node;
+    MemoryNode* aux = list->head_;
+    for (u16 i = 0; i < index - 1; i++)
+    {
+        aux = aux->next_;
+    }
+    node = aux->next_;
+    aux->next_ = aux->next_->next_;
+    list->length_--;
+    return node->data_;
 }
 
 
@@ -600,7 +604,7 @@ s16 LIST_traverse(List *list, void(*callback)(MemoryNode*))
 
     return kErrorCode_Ok;
 }
-
+/*
 void LIST_print(List *list)
 {
     if (NULL == list)
@@ -635,7 +639,53 @@ void LIST_print(List *list)
         storage_index++;
     }
 }
+*/
 
 
-
+void LIST_print(List* list)
+{
+    if (NULL == list)
+    {
+        printf("\t[List Info] Address: NULL\n");
+        return;
+    }
+    if (LIST_isEmpty(list))
+    {
+        printf("\t[List Info] Address: %p\n", list);
+        printf("\t[List Info] Head: NULL\n");
+        printf("\t[List Info] Tail: NULL\n");
+        printf("\t[List Info] Length: %d\n", LIST_lenght(list));
+        printf("\t[List Info] Capacity: %d\n", LIST_capacity(list));
+        return;
+    }
+    printf("\t[List Info] Head: %p\n", list->head_);
+    printf("\t[List Info] Tail: %p\n", list->tail_);
+    printf("\t[List Info] Length: %d\n", LIST_lenght(list));
+    printf("\t[List Info] Capacity: %d\n", LIST_capacity(list));
+    MemoryNode* aux = list->head_;
+    for (u16 i = 0; i < list->ops_->length(list); i++)
+    {
+        printf("\t\t[List Info] Node #%d\n", i);
+        printf("\t\t\t[Node Info] Address: %p\n", aux);
+        printf("\t\t\t[Node Info] Size: %d\n", aux->size_);
+        printf("\t\t\t[Node Info] Data Address: %p\n", &aux->data_);
+        printf("\t\t\t[Node Info] Data Content: ");
+        u8* data_byte = aux->data_;
+        for (u16 j = 0; j < aux->size_; j++)
+        {
+            printf("%c", data_byte[j]);
+        }
+        printf("\n");
+        if (NULL == aux->next_)
+        {
+            printf("\t\t\t[Node Info] Next Adress: NULL\n");
+        }
+        else
+        {
+            printf("\t\t\t[Node Info] Next Adress: %p\n", aux->next_);
+        }
+     
+        aux = aux->next_;
+    }
+}
 

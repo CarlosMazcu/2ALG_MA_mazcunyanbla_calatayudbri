@@ -207,7 +207,7 @@ struct list_ops_s {
  *         - kErrorCode_ListNull: The provided list pointer is NULL.
  *         - kErrorCode_ListEmpty: The list is empty.
  */
-  s16(*extractFirst)(List *list);
+  void*(*extractFirst)(List *list);
 
  /**
  * @brief Extracts the last node from a list.
@@ -220,7 +220,7 @@ struct list_ops_s {
  *         - kErrorCode_ListNull: The provided list pointer is NULL.
  *         - kErrorCode_ListEmpty: The list is empty.
  */
-  s16(*extractLast)(List *list);
+  void*(*extractLast)(List *list);
  
  /**
  * @brief Extracts a node at a specified index from a list.
@@ -235,7 +235,7 @@ struct list_ops_s {
  *         - kErrorCode_InvalidIndex: The specified index is invalid.
  *         - kErrorCode_ListEmpty: The list is empty.
  */
-  s16(*extractAt)(List *list, u16 index);
+  void*(*extractAt)(List *list, u16 index);
 
   /**
  * @brief Concatenates two lists.
