@@ -21,7 +21,7 @@ PROJECT_NAMES = {
   --"PR07_CircularList",
   --"PR08_CircularDLList",
   "PR09_Stack",
-  --"PR10_Queue",
+  "PR10_Queue",
   --"PR11_Logger",
   --"PR12_Comparative",
   --"PR13_SortingAlgorithms",
@@ -171,7 +171,15 @@ project "PR01_Vector"
     path.join(PROJ_DIR, "src/adt_stack.c"),
     path.join(PROJ_DIR, "tests/test_stack.c"),
   }
---[[
+  project "PR10_Queue"
+  files {
+    path.join(PROJ_DIR, "include/adt_list.h"),
+    path.join(PROJ_DIR, "src/adt_list.c"),
+    path.join(PROJ_DIR, "include/adt_queue.h"),
+    path.join(PROJ_DIR, "src/adt_queue.c"),
+    path.join(PROJ_DIR, "tests/test_queue.c"),
+  }
+  --[[
 
   project "PR03_CircularVector"
   files {
