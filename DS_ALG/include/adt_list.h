@@ -1,5 +1,5 @@
 /**
- * @file adt_memory_node.h
+ * @file adt_list.h
  * @brief
  * @author <mazcunyanbla@esat-alumni.com> <calatayudbri@esat-alumni.com>
  * @date 2023-11-28
@@ -35,22 +35,45 @@ struct list_ops_s {
  */
   MemoryNode*(*next)(MemoryNode *node);
 
- /**
- * @brief Sets the next node for a given node.
+/**
+ * @brief Destroy a list and free the allocated memory.
  *
- * This function sets the 'next_' pointer of the provided node to point to the specified next node.
+ * This function destroys the specified list and frees the memory associated with it.
+ * If the list is not empty, it iterates through all nodes and frees the memory allocated for each node and its data.
  *
- * @param node Pointer to the memory node for which to set the next node.
- * @param next Pointer to the next node to be set for the provided node.
- * @return Error code indicating the success or failure of the operation.
- *         - kErrorCode_Ok: Operation completed successfully.
- *         - kErrorCode_NodeNull: Either the provided node or the next node is NULL.
+ * @param list Pointer to the list to be destroyed.
+ * @return Returns an error code indicating the result of the operation.
+ *         - kErrorCode_Ok if the list was successfully destroyed.
+ *         - kErrorCode_ListNull if the `list` pointer is NULL.
  */
-  s16(*setNext)(MemoryNode *node, MemoryNode *next);
 
   s16(*destroy)(List *list);
 
+  /**
+ * @brief Soft reset for a list, clearing all nodes and resetting list properties.
+ *
+ * This function performs a soft reset for the specified list, clearing all nodes and resetting the list properties.
+ * It frees the memory associated with each node and its data but does not free the memory of the list itself.
+ *
+ * @param list Pointer to the list to be reset.
+ * @return Returns an error code indicating the result of the operation.
+ *         - `kErrorCode_Ok` if the soft reset was successful.
+ *         - `kErrorCode_ListNull` if the `list` pointer is NULL.
+ */
+
   s16(*softReset)(List *List);
+
+/**
+ * @brief Reset a list, clearing all nodes and resetting list properties.
+ *
+ * This function resets the specified list, clearing all nodes and resetting the list properties.
+ * It frees the memory associated with each node and its data, as well as the memory allocated for the list itself.
+ *
+ * @param list Pointer to the list to be reset.
+ * @return Returns an error code indicating the result of the operation.
+ *         - `kErrorCode_Ok` if the reset was successful.
+ *         - `kErrorCode_ListNull` if the `list` pointer is NULL.
+ */
 
   s16(*reset)(List *list);
 

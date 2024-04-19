@@ -16,7 +16,6 @@
 #include "EDK_MemoryManager/edk_memory_manager.h"
 
 static MemoryNode* LIST_next(MemoryNode* node);
-static s16 LIST_setNext(MemoryNode* node, MemoryNode* next);
 static s16 LIST_destroy(List* list);
 static s16 LIST_reset(List* list);
 static s16 LIST_softReset(List* List);
@@ -40,7 +39,6 @@ static void LIST_print(List* list);
 
 // List's API Definitions
 struct list_ops_s list_ops = { .next = LIST_next,
-                                             .setNext = LIST_setNext,
                                              .destroy = LIST_destroy,
                                              .reset = LIST_reset,
                                              .softReset = LIST_softReset,
@@ -303,31 +301,6 @@ void* LIST_last(List* list)
 
 void* LIST_at(List* list, u16 index)
 {
-  /*  if (NULL == list)
-    {
-        return NULL;
-    }
-    MemoryNode* aux = list->head_;
-    if (index >= list->length_)
-    {
-        return list->tail_->data_;
-    }
-
-    if (NULL == aux)
-    {
-        return NULL;
-    }
-    for (int i = 0; i < index; ++i)
-    {
-        aux = aux->next_;
-    }
-
-    if (NULL == aux->data_)
-    {
-        return NULL;
-    }
-    return aux->data_;*/
-
     if (NULL == list)
     {
         return NULL;

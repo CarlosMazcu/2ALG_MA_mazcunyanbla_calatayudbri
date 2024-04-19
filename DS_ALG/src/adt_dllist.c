@@ -1,5 +1,5 @@
 /**
- * @file adt_memory_node.c
+ * @file adt_dllink.c
  * @brief
  * @author <mazcunyanbla@esat-alumni.com> <calatayudbri@esat-alumni.com>
  * @date 2023-11-28
@@ -16,7 +16,6 @@
 #include "EDK_MemoryManager/edk_memory_manager.h"
 
 static MemoryNode* LIST_next(MemoryNode* node);
-static s16 LIST_setNext(MemoryNode* node, MemoryNode* next);
 static s16 LIST_destroy(List* list);
 static s16 LIST_reset(List* list);
 static s16 LIST_softReset(List* List);
@@ -40,7 +39,6 @@ static void LIST_print(List* list);
 
 // List's API Definitions
 struct list_ops_s list_ops = { .next = LIST_next,
-                                             .setNext = LIST_setNext,
                                              .destroy = LIST_destroy,
                                              .reset = LIST_reset,
                                              .softReset = LIST_softReset,
@@ -94,14 +92,14 @@ MemoryNode* LIST_next(MemoryNode* node)
     return node->next_;
 }
 
-s16 LIST_setNext(MemoryNode* node, MemoryNode* next)
+/* s16 LIST_setNext(MemoryNode* node, MemoryNode* next)
 {
     if (NULL == node || NULL == next) {
         return kErrorCode_NodeNull;
     }
     node->next_ = next;
     return kErrorCode_Ok;
-}
+} */
 
 /*Comprobar si es correcto*/
 s16 LIST_destroy(List* list) {
@@ -405,6 +403,8 @@ s16 LIST_insertLast(List* list, void* data, u16 size)
     {
         // Insert node at end
         list->tail_->next_ = node;
+        node->prev_ = list->tail_;
+        // TODO: node prev = list tail
         list->tail_ = node;
         list->length_++;
     }
@@ -424,7 +424,6 @@ s16 LIST_insertAt(List* list, void* data, u16 size, u16 index)
         return kErrorCode_DataNull;
     }
     // check if is full
-
     if (LIST_isFull(list))
     {
         return kErrorCode_NotEnoughCapacity;
@@ -442,20 +441,16 @@ s16 LIST_insertAt(List* list, void* data, u16 size, u16 index)
     node->ops_->setData(node, data, size);
     node->next_ = NULL;
     node->prev_ = NULL;
-
     // insert first
     if (index == 0)
-
     {
         return LIST_insertFirst(list, node->data_, node->size_);
     }
-
     // insert last
-    if (index == list->length_)
+    if (index >= list->length_)
     {
         return LIST_insertLast(list, node->data_, node->size_);
     }
-
     u16 mid = list->length_/2;
     MemoryNode* current_node = MEMNODE_create();
     if(NULL == current_node){
@@ -470,14 +465,19 @@ s16 LIST_insertAt(List* list, void* data, u16 size, u16 index)
         }
     }else{
         current_node = list->tail_;
-        for (u16 i = list->length_ - 1; i > index && NULL != current_node; i--)
+      
+        for (u16 i = list->length_ - 1; i > index; i--)
         {
             current_node = current_node->prev_;
         }
-
     }
+    
+
     node->next_ = current_node->next_;
+    node->prev_ = current_node;
+    current_node->next_->prev_ = node;
     current_node->next_ = node;
+    
     list->length_++;
 
     return kErrorCode_Ok;
@@ -539,50 +539,6 @@ void* LIST_extractLast(List* list)
 
 void* LIST_extractAt(List* list, u16 index)
 {
-    /*
-    if (NULL == list)
-    {
-        return NULL;
-    }
-
-    if (index >= list->length_)
-    {
-        return list->ops_->extractLast(list);
-    }
-
-    if (LIST_isEmpty(list))
-    {
-        return NULL;
-    }
-
-    MemoryNode *node_to_extract;
-
-    // If extractFirst
-    if (index == 0)
-    {
-       return LIST_extractFirst(list);
-    }
-    // search prev node to extract
-    MemoryNode *prev_node = NULL;
-    MemoryNode *current_node = list->head_;
-    u16 current_index = 0;
-
-    while (current_index < index)
-    {
-        prev_node = current_node;
-        current_node = current_node->next_;
-        current_index++;
-    }
-    node_to_extract = current_node;
-    //prev_node->next_ = current_node->next_;
-    // Free
-    void* extracted_data = node_to_extract->data_;
-    MM->free(node_to_extract);
-    current_node->next_ = NULL;
-    list->length_--;
-
-    return extracted_data;
-    */
     if (NULL == list)
     {
         return NULL;
@@ -600,14 +556,37 @@ void* LIST_extractAt(List* list, u16 index)
     {
         index = list->length_;
     }
-    MemoryNode* node;
-    MemoryNode* aux = list->head_;
-    for (u16 i = 0; i < index - 1; i++)
+    MemoryNode* node = MEMNODE_create();
+    MemoryNode* aux = MEMNODE_create();
+    if(NULL == aux || NULL == node)
     {
-        aux = aux->next_;
+        return kErrorCode_Null;
+    }
+    if(0 == index)
+    {
+        return LIST_extractLast(list);
+    }
+    if(index >= list->length_)
+    {
+        return LIST_extractLast(list);
+    }
+    u16 mid = list->length_/2;
+    if(index <= mid){
+        aux = list->head_;
+        for (u16 i = 0; i < index - 1; i++)
+        {
+            aux = aux->next_;
+        }
+    }else{
+        aux = list->tail_;
+        for(u16 i = list->length_ - 1; i > index; i--)
+        {
+            aux = aux->prev_;
+        }
     }
     node = aux->next_;
     aux->next_ = aux->next_->next_;
+    
     list->length_--;
     return node->data_;
 }

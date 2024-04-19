@@ -1,5 +1,5 @@
 /**
- * @file adt_memory_node.h
+ * @file adt_dllist.h
  * @brief
  * @author <mazcunyanbla@esat-alumni.com> <calatayudbri@esat-alumni.com>
  * @date 2023-11-28
@@ -48,10 +48,42 @@ struct list_ops_s {
  */
   s16(*setNext)(MemoryNode *node, MemoryNode *next);
 
+/**
+ * @brief Destroy a list and free the allocated memory.
+ *
+ * This function destroys the specified list and frees the memory associated with it.
+ *
+ * @param list Pointer to the list to be destroyed.
+ * @return Returns an error code indicating the result of the operation.
+ *         - `kErrorCode_Ok` if the list was successfully destroyed.
+ *         - `kErrorCode_ListNull` if the `list` pointer is NULL.
+ */
   s16(*destroy)(List *list);
+
+/**
+ * @brief Soft reset for a list, clearing all nodes and resetting list properties.
+ *
+ * This function performs a soft reset for the specified list, clearing all nodes and resetting the list properties.
+ *
+ * @param list Pointer to the list to be reset.
+ * @return Returns an error code indicating the result of the operation.
+ *         - `kErrorCode_Ok` if the soft reset was successful.
+ *         - `kErrorCode_ListNull` if the `list` pointer is NULL.
+ */
 
   s16(*softReset)(List *List);
 
+
+/**
+ * @brief Reset a list, clearing all nodes and resetting list properties.
+ *
+ * This function resets the specified list, clearing all nodes and resetting the list properties.
+ *
+ * @param list Pointer to the list to be reset.
+ * @return Returns an error code indicating the result of the operation.
+ *         - `kErrorCode_Ok` if the reset was successful.
+ *         - `kErrorCode_ListNull` if the `list` pointer is NULL.
+ */
   s16(*reset)(List *list);
 
   /**

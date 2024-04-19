@@ -187,6 +187,32 @@ struct memory_node_ops_s {
  *         kErrorCode_DataNull if the data pointer in the node is NULL.
  */
   void(*print) (MemoryNode *node);
+
+   /**
+ * @brief Sets the next node for a given node.
+ *
+ * This function sets the 'next_' pointer of the provided node to point to the specified next node.
+ *
+ * @param node Pointer to the memory node for which to set the next node.
+ * @param next Pointer to the next node to be set for the provided node.
+ * @return Error code indicating the success or failure of the operation.
+ *         - kErrorCode_Ok: Operation completed successfully.
+ *         - kErrorCode_NodeNull: Either the provided node or the next node is NULL.
+ */
+  s16(*setNext)(MemoryNode *node, MemoryNode *next);
+
+     /**
+ * @brief Sets the next node for a given node.
+ *
+ * This function sets the 'next_' pointer of the provided node to point to the specified next node.
+ *
+ * @param node Pointer to the memory node for which to set the next node.
+ * @param next Pointer to the next node to be set for the provided node.
+ * @return Error code indicating the success or failure of the operation.
+ *         - kErrorCode_Ok: Operation completed successfully.
+ *         - kErrorCode_NodeNull: Either the provided node or the next node is NULL.
+ */
+  s16(*setPrev)(MemoryNode *node, MemoryNode *next);
 };
 
 /**

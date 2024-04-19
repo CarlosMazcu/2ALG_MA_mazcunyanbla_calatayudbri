@@ -1,5 +1,5 @@
 /**
- * @file adt_vector.c
+ * @file adt_mh_vector.c
  * @brief
  * @author <mazcunyanbla@esat-alumni.com> <calatayudbri@esat-alumni.com>
  * @date 2023-11-28

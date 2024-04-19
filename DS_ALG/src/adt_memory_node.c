@@ -31,11 +31,16 @@ static s16 MEMNODE_memCopy(MemoryNode *node, void *src, u16 bytes);
 static s16 MEMNODE_memConcat(MemoryNode *node, void *src, u16 bytes);
 static s16 MEMNODE_memMask(MemoryNode *node, u8 mask);
 
+static s16 LIST_setNext(MemoryNode* node, MemoryNode* next);
+static s16 LIST_setPrev(MemoryNode* node, MemoryNode* prev);
+
 static void MEMNODE_print(MemoryNode *node);
 
 
 // Memory Node's API Definitions
 struct memory_node_ops_s memory_node_ops = { .data = MEMNODE_data,
+                                            .setNext = LIST_setNext,
+                                            .setPrev = LIST_setPrev,
                                              .size = MEMNODE_size,
                                              .setData = MEMNODE_setData,
                                              .reset = MEMNODE_reset,
@@ -94,6 +99,25 @@ s16 MEMNODE_initWithoutCheck(MemoryNode *node) {
   node->ops_ = &memory_node_ops;
   return kErrorCode_Ok;
 }
+
+s16 LIST_setNext(MemoryNode* node, MemoryNode* next)
+{
+    if (NULL == node || NULL == next) {
+        return kErrorCode_NodeNull;
+    }
+    node->next_ = next;
+    return kErrorCode_Ok;
+}
+
+s16 LIST_setPrev(MemoryNode* node, MemoryNode* prev)
+{
+    if (NULL == node || NULL == prev) {
+        return kErrorCode_NodeNull;
+    }
+    node->prev_ = prev;
+    return kErrorCode_Ok;
+}
+
 
 void* MEMNODE_data(MemoryNode *node)
 { // returns a reference to data_
