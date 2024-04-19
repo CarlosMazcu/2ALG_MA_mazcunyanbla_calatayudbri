@@ -23,7 +23,7 @@ static s16 STACK_push(Stack *stack, void *data, u16 bytes);
 static void *STACK_pop(Stack *stack);
 static void *STACK_top(Stack *stack);
 static s16 STACK_concat(Stack *stack, Stack *stack_src);
-static s16 STACK_print(Stack *stack);
+static void STACK_print(Stack *stack);
 
 struct stack_ops_s stack_ops = {
     .destroy = STACK_destroy,
@@ -60,7 +60,7 @@ Stack *STACK_create(u16 capacity)
 
 s16 STACK_destroy(Stack* stack)
 {
-    if (NULL == stack)
+    if (NULL == stack || NULL == stack->storage_)
     {
         return kErrorCode_StackNull;
     }
@@ -70,7 +70,7 @@ s16 STACK_destroy(Stack* stack)
 
 s16 STACK_resize(Stack* stack, u16 new_size)
 {
-    if (NULL == stack)
+    if (NULL == stack || NULL == stack->storage_)
     {
         return kErrorCode_StackNull;
     }
@@ -80,7 +80,7 @@ s16 STACK_resize(Stack* stack, u16 new_size)
 
 s16 STACK_reset(Stack* stack)
 {
-    if (NULL == stack)
+    if (NULL == stack || NULL == stack->storage_)
     {
         return kErrorCode_StackNull;
     }
@@ -90,7 +90,7 @@ s16 STACK_reset(Stack* stack)
 
 u16 STACK_capacity(Stack *stack)
 {
-    if (NULL == stack)
+    if (NULL == stack || NULL == stack->storage_)
     {
         return 0;
     }
@@ -100,7 +100,7 @@ u16 STACK_capacity(Stack *stack)
 
 u16 STACK_length(Stack* stack)
 {
-    if (NULL == stack)
+    if (NULL == stack || NULL == stack->storage_)
     {
         return 0;
     }
@@ -110,7 +110,7 @@ u16 STACK_length(Stack* stack)
 
 boolean STACK_isEmpty(Stack* stack)
 {
-    if (NULL == stack)
+    if (NULL == stack || NULL == stack->storage_)
     {
         return kErrorCode_StackNull;
     }
@@ -119,7 +119,7 @@ boolean STACK_isEmpty(Stack* stack)
 
 boolean STACK_isFull(Stack* stack)
 {
-    if (NULL == stack)
+    if (NULL == stack || NULL == stack->storage_)
     {
         return kErrorCode_StackNull;
     }
@@ -128,7 +128,7 @@ boolean STACK_isFull(Stack* stack)
 
 s16 STACK_push(Stack* stack, void* data, u16 bytes)
 {
-    if (NULL == stack)
+    if (NULL == stack || NULL == stack->storage_)
     {
         return kErrorCode_StackNull;
     }
@@ -138,16 +138,16 @@ s16 STACK_push(Stack* stack, void* data, u16 bytes)
 
 void* STACK_pop(Stack* stack)
 {
-    if (NULL == stack)
+    if (NULL == stack || NULL == stack->storage_)
     {
         return kErrorCode_Ok;
     }
-    return stack->storage_->ops_->extractAt(stack->storage_);
+    return stack->storage_->ops_->extractLast(stack->storage_);
 }
 
 void* STACK_top(Stack* stack)
 {
-    if (NULL == stack)
+    if (NULL == stack || NULL == stack->storage_)
     {
         return kErrorCode_Ok;
     }
@@ -166,7 +166,7 @@ s16 STACK_concat(Stack* stack, Stack* stack_src)
 
 void STACK_print(Stack* stack)
 {
-    if (NULL == stack) 
+    if (NULL == stack || NULL == stack->storage_)
     {
         return kErrorCode_StackNull;
     }

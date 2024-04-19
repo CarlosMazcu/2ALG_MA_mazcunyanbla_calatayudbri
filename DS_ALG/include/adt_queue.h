@@ -11,12 +11,12 @@
 #define __ADT_QUEUE_H__
 
 #include "EDK_MemoryManager/edk_platform_types.h"
-#include "adt_list.h"
+#include "adt_dllist.h"
 
 typedef struct queue_s
 {
-	List* storage;
-	struct queue_ops_s ops_;
+	List* storage_;
+	struct queue_ops_s *ops_;
 } Queue;
 
 struct queue_ops_s

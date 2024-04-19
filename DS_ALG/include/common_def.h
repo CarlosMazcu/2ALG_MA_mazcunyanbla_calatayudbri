@@ -31,6 +31,7 @@ typedef enum
   kErrorCode_InvalidIndex = -32,
   kErrorCode_ListEmpty = -33,
   kErrorCode_StackNull = -50,
+  kErrorCode_QueueNull = -60,
 }ErrorCode;
 
 #endif // __COMMON_DEF_H__
