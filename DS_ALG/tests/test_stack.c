@@ -344,7 +344,7 @@ int main()
 	TESTBASE_printFunctionResult(stack_2, (u8 *)"resize stack_2 (NOT VALID)", error_type);
 
 	printf("\n\n# Test Reset\n");
-	error_type = s->ops_->reset(&stack_2);
+	error_type = s->ops_->reset(stack_2);
 	TESTBASE_printFunctionResult(stack_2, (u8 *)"reset stack_2 (NOT VALID)", error_type);
 
 

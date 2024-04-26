@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "edk_platform_types.h": "c",
+        "edk_memory_manager.h": "c"
+    }
+}

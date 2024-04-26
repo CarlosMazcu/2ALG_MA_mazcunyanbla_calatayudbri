@@ -1,5 +1,5 @@
 /**
- * @file adt_dllink.c
+ * @file adt_memory_node.c
  * @brief
  * @author <mazcunyanbla@esat-alumni.com> <calatayudbri@esat-alumni.com>
  * @date 2023-11-28
@@ -11,63 +11,63 @@
 
 #include "common_def.h"
 #include "adt_memory_node.h"
-#include "adt_dllist.h"
+#include "adt_list.h"
 
 #include "EDK_MemoryManager/edk_memory_manager.h"
 
-static MemoryNode* DLList_next(MemoryNode* node);
-static s16 DLList_destroy(DLList* list);
-static s16 DLList_reset(DLList* list);
-static s16 DLList_softReset(DLList* DLList);
-static s16 DLList_resize(DLList* list, u16 new_capacity);
-static u16 DLList_capacity(DLList* list);
-static u16 DLList_lenght(DLList* list);
-static boolean DLList_isEmpty(DLList* list);
-static boolean DLList_isFull(DLList* list);
-static void* DLList_first(DLList* list);
-static void* DLList_last(DLList* list);
-static void* DLList_at(DLList* list, u16 index);
-static s16 DLList_insertFirst(DLList* list, void* data, u16 size);
-static s16 DLList_insertLast(DLList* list, void* data, u16 size);
-static s16 DLList_insertAt(DLList* list, void* data, u16 size, u16 index);
-static void* DLList_extractFirst(DLList* list);
-static void* DLList_extractLast(DLList* list);
-static void* DLList_extractAt(DLList* list, u16 index);
-static s16 DLList_concat(DLList* list, DLList* other_list);
-static s16 DLList_traverse(DLList* list, void (*callback)(MemoryNode*));
-static void DLList_print(DLList* list);
+static MemoryNode* LIST_next(MemoryNode* node);
+static s16 LIST_destroy(List* list);
+static s16 LIST_reset(List* list);
+static s16 LIST_softReset(List* List);
+static s16 LIST_resize(List* list, u16 new_capacity);
+static u16 LIST_capacity(List* list);
+static u16 LIST_lenght(List* list);
+static boolean LIST_isEmpty(List* list);
+static boolean LIST_isFull(List* list);
+static void* LIST_first(List* list);
+static void* LIST_last(List* list);
+static void* LIST_at(List* list, u16 index);
+static s16 LIST_insertFirst(List* list, void* data, u16 size);
+static s16 LIST_insertLast(List* list, void* data, u16 size);
+static s16 LIST_insertAt(List* list, void* data, u16 size, u16 index);
+static void* LIST_extractFirst(List* list);
+static void* LIST_extractLast(List* list);
+static void* LIST_extractAt(List* list, u16 index);
+static s16 LIST_concat(List* list, List* other_list);
+static s16 LIST_traverse(List* list, void (*callback)(MemoryNode*));
+static void LIST_print(List* list);
 
-// DLList's API Definitions
-struct list_ops_s list_ops = { .next = DLList_next,
-                                             .destroy = DLList_destroy,
-                                             .reset = DLList_reset,
-                                             .softReset = DLList_softReset,
-                                             .resize = DLList_resize,
-                                             .capacity = DLList_capacity,
-                                             .length = DLList_lenght,
-                                             .isEmpty = DLList_isEmpty,
-                                             .isFull = DLList_isFull,
-                                             .first = DLList_first,
-                                             .last = DLList_last,
-                                             .at = DLList_at,
-                                             .insertFirst = DLList_insertFirst,
-                                             .insertLast = DLList_insertLast,
-                                             .insertAt = DLList_insertAt,
-                                             .extractFirst = DLList_extractFirst,
-                                             .extractLast = DLList_extractLast,
-                                             .extractAt = DLList_extractAt,
-                                             .concat = DLList_concat,
-                                             .traverse = DLList_traverse,
-                                             .print = DLList_print,
+// List's API Definitions
+struct list_ops_s list_ops = { .next = LIST_next,
+                                             .destroy = LIST_destroy,
+                                             .reset = LIST_reset,
+                                             .softReset = LIST_softReset,
+                                             .resize = LIST_resize,
+                                             .capacity = LIST_capacity,
+                                             .length = LIST_lenght,
+                                             .isEmpty = LIST_isEmpty,
+                                             .isFull = LIST_isFull,
+                                             .first = LIST_first,
+                                             .last = LIST_last,
+                                             .at = LIST_at,
+                                             .insertFirst = LIST_insertFirst,
+                                             .insertLast = LIST_insertLast,
+                                             .insertAt = LIST_insertAt,
+                                             .extractFirst = LIST_extractFirst,
+                                             .extractLast = LIST_extractLast,
+                                             .extractAt = LIST_extractAt,
+                                             .concat = LIST_concat,
+                                             .traverse = LIST_traverse,
+                                             .print = LIST_print,
 };
 
-DLList* DLList_create(u16 capacity)
+List* LIST_create(u16 capacity)
 {
     if (0 >= capacity)
     {
         return NULL;
     }
-    DLList* list_ = MM->malloc(sizeof(DLList));
+    List* list_ = MM->malloc(sizeof(List));
     if (NULL == list_)
     {
         return NULL;
@@ -82,7 +82,7 @@ DLList* DLList_create(u16 capacity)
 
 }
 
-MemoryNode* DLList_next(MemoryNode* node)
+MemoryNode* LIST_next(MemoryNode* node)
 {
     if (NULL == node)
     {
@@ -92,24 +92,24 @@ MemoryNode* DLList_next(MemoryNode* node)
     return node->next_;
 }
 
-/* s16 DLList_setNext(MemoryNode* node, MemoryNode* next)
+s16 LIST_setNext(MemoryNode* node, MemoryNode* next)
 {
     if (NULL == node || NULL == next) {
         return kErrorCode_NodeNull;
     }
     node->next_ = next;
     return kErrorCode_Ok;
-} */
+}
 
 /*Comprobar si es correcto*/
-s16 DLList_destroy(DLList* list) {
+s16 LIST_destroy(List* list) {
 
     if (NULL == list)
     {
         return kErrorCode_ListNull;
     }
 
-    if (DLList_isEmpty(list))
+    if (LIST_isEmpty(list))
     {
         //MM->free(list->head_);
         //MM->free(list->tail_);
@@ -137,7 +137,7 @@ s16 DLList_destroy(DLList* list) {
     return kErrorCode_Ok;
 }
 
-s16 DLList_softReset(DLList* list)
+s16 LIST_softReset(List* list)
 {
     if (NULL == list)
     {
@@ -164,7 +164,7 @@ s16 DLList_softReset(DLList* list)
 
 }
 
-s16 DLList_reset(DLList* list)
+s16 LIST_reset(List* list)
 {
     if (NULL == list)
     {
@@ -188,7 +188,7 @@ s16 DLList_reset(DLList* list)
     return kErrorCode_Ok;
 }
 
-s16 DLList_resize(DLList* list, u16 new_capacity)
+s16 LIST_resize(List* list, u16 new_capacity)
 {
     if (NULL == list)
     {
@@ -231,7 +231,7 @@ s16 DLList_resize(DLList* list, u16 new_capacity)
     return kErrorCode_Ok;
 }
 
-u16 DLList_capacity(DLList* list)
+u16 LIST_capacity(List* list)
 {
     if (NULL == list) {
         return 0;
@@ -239,7 +239,7 @@ u16 DLList_capacity(DLList* list)
     return list->capacity_;
 }
 
-u16 DLList_lenght(DLList* list)
+u16 LIST_lenght(List* list)
 {
     if (NULL == list)
     {
@@ -248,7 +248,7 @@ u16 DLList_lenght(DLList* list)
     return list->length_;
 }
 
-boolean DLList_isEmpty(DLList* list)
+boolean LIST_isEmpty(List* list)
 {
     if (NULL == list)
     {
@@ -260,7 +260,7 @@ boolean DLList_isEmpty(DLList* list)
     return True;
 }
 
-boolean DLList_isFull(DLList* list)
+boolean LIST_isFull(List* list)
 {
     if (NULL == list)
     {
@@ -272,20 +272,20 @@ boolean DLList_isFull(DLList* list)
     return True;
 }
 
-void* DLList_first(DLList* list)
+void* LIST_first(List* list)
 {
     if (NULL == list)
     {
         return NULL;
     }
-    if (DLList_isEmpty(list))
+    if (LIST_isEmpty(list))
     {
         return NULL;
     }
     return list->head_->data_;
 }
 
-void* DLList_last(DLList* list)
+void* LIST_last(List* list)
 {
     if (NULL == list)
     {
@@ -298,30 +298,17 @@ void* DLList_last(DLList* list)
     return list->tail_->data_;
 
 }
-//done
-void* DLList_at(DLList* list, u16 index)
+
+void* LIST_at(List* list, u16 index)
 {
     if (NULL == list)
     {
         return NULL;
     }
-    MemoryNode* aux;
-    u16 mid = list->length_/2;
-    if(index <= mid){
-        //empezamos por el principio
-        aux = list->head_;
-        for (u16 i = 0; i < index && NULL != aux; i++)
-        {
-            aux = aux->next_;
-        }
-    }else{
-        aux = list->tail_;
-        for (u16 i = list->length_ - 1; i > index && NULL != aux; i--)
-        {
-            aux = aux->prev_;
-        }
-
-
+    MemoryNode* aux = list->head_;
+    for (u16 i = 0; i < index && NULL != aux; i++)
+    {
+        aux = aux->next_;
     }
     if (NULL == aux)
     {
@@ -334,7 +321,7 @@ void* DLList_at(DLList* list, u16 index)
     return aux->data_;
 }
 
-s16 DLList_insertFirst(DLList* list, void* data, u16 size)
+s16 LIST_insertFirst(List* list, void* data, u16 size)
 {
 
     if (NULL == list)
@@ -347,7 +334,7 @@ s16 DLList_insertFirst(DLList* list, void* data, u16 size)
         return kErrorCode_NotEnoughCapacity;
     }
 
-    if (DLList_isFull(list))
+    if (LIST_isFull(list))
     {
         return kErrorCode_NotEnoughCapacity;
     }
@@ -358,7 +345,7 @@ s16 DLList_insertFirst(DLList* list, void* data, u16 size)
     }
     node->ops_->setData(node, data, size);
      //check if the list is empty
-    if (DLList_isEmpty(list))
+    if (LIST_isEmpty(list))
     {
         list->head_ = node;
         list->tail_ = node;
@@ -374,13 +361,13 @@ s16 DLList_insertFirst(DLList* list, void* data, u16 size)
     return kErrorCode_Ok;
 }
 
-s16 DLList_insertLast(DLList* list, void* data, u16 size)
+s16 LIST_insertLast(List* list, void* data, u16 size)
 {
     if (NULL == list)
     {
         return kErrorCode_ListNull;
     }
-    if (DLList_isFull(list))
+    if (LIST_isFull(list))
     {
         return kErrorCode_NotEnoughCapacity;
     }
@@ -393,7 +380,7 @@ s16 DLList_insertLast(DLList* list, void* data, u16 size)
     //node->size_ = size;
     //node->data_ = data;
     //check if the list is empty
-    if (DLList_isEmpty(list))
+    if (LIST_isEmpty(list))
     {
         list->head_ = node;
         list->tail_ = node;
@@ -403,8 +390,6 @@ s16 DLList_insertLast(DLList* list, void* data, u16 size)
     {
         // Insert node at end
         list->tail_->next_ = node;
-        node->prev_ = list->tail_;
-        // TODO: node prev = list tail
         list->tail_ = node;
         list->length_++;
     }
@@ -412,7 +397,7 @@ s16 DLList_insertLast(DLList* list, void* data, u16 size)
     return kErrorCode_Ok;
 }
 
-s16 DLList_insertAt(DLList* list, void* data, u16 size, u16 index)
+s16 LIST_insertAt(List* list, void* data, u16 size, u16 index)
 {
 
     if (NULL == list)
@@ -424,14 +409,15 @@ s16 DLList_insertAt(DLList* list, void* data, u16 size, u16 index)
         return kErrorCode_DataNull;
     }
     // check if is full
-    if (DLList_isFull(list))
+
+    if (LIST_isFull(list))
     {
         return kErrorCode_NotEnoughCapacity;
     }
     // Check index
     if (index > list->length_)
     {
-        return DLList_insertLast(list, data, size);
+        return list->ops_->insertLast(list, data, size);
     }
     MemoryNode* node = MEMNODE_create();
     if (NULL == node)
@@ -439,52 +425,36 @@ s16 DLList_insertAt(DLList* list, void* data, u16 size, u16 index)
         return kErrorCode_NodeNull;
     }
     node->ops_->setData(node, data, size);
-    node->next_ = NULL;
-    node->prev_ = NULL;
+    //node->size_ = size;
+    //node->data_ = data;
+
     // insert first
     if (index == 0)
     {
-        return DLList_insertFirst(list, node->data_, node->size_);
+        return LIST_insertFirst(list, node->data_, node->size_);
     }
-    // insert last
-    if (index >= list->length_)
-    {
-        return DLList_insertLast(list, node->data_, node->size_);
-    }
-    u16 mid = list->length_/2;
-    MemoryNode* current_node = MEMNODE_create();
-    if(NULL == current_node){
-        return kErrorCode_Null;
-    }
-    if(index <= mid){
-        // Insert node in index
-        current_node = list->head_;
-        for (u16 i = 0; i < index - 1; i++)
-        {
-            current_node = current_node->next_;
-        }
-    }else{
-        current_node = list->tail_;
-      
-        for (u16 i = list->length_ - 1; i > index; i--)
-        {
-            current_node = current_node->prev_;
-        }
-    }
-    
 
+    // insert last
+    if (index == list->length_)
+    {
+        return LIST_insertLast(list, node->data_, node->size_);
+    }
+
+    // Insert node in index
+    MemoryNode* current_node = list->head_;
+    for (u16 i = 0; i < index - 1; i++)
+    {
+        current_node = current_node->next_;
+    }
     node->next_ = current_node->next_;
-    node->prev_ = current_node;
-    current_node->next_->prev_ = node;
     current_node->next_ = node;
-    
     list->length_++;
 
     return kErrorCode_Ok;
 
 }
 
-void* DLList_extractFirst(DLList* list)
+void* LIST_extractFirst(List* list)
 {
     if (NULL == list)
     {
@@ -492,7 +462,7 @@ void* DLList_extractFirst(DLList* list)
     }
 
     // check list empty
-    if (DLList_isEmpty(list))
+    if (LIST_isEmpty(list))
     {
         return NULL;
     }
@@ -503,7 +473,7 @@ void* DLList_extractFirst(DLList* list)
     return node_to_extract->data_;
 }
 
-void* DLList_extractLast(DLList* list)
+void* LIST_extractLast(List* list)
 {
     if (NULL == list)
     {
@@ -511,7 +481,7 @@ void* DLList_extractLast(DLList* list)
     }
 
     // Verifica si la lista está vacía
-    if (DLList_isEmpty(list))
+    if (LIST_isEmpty(list))
     {
         return NULL;
     }
@@ -527,7 +497,7 @@ void* DLList_extractLast(DLList* list)
     list->tail_ = aux;
     list->tail_->next_ = NULL;
     list->length_--;
-    if (DLList_isEmpty(list))
+    if (LIST_isEmpty(list))
     {
         list->head_ = NULL;
         list->tail_ = NULL;
@@ -537,13 +507,57 @@ void* DLList_extractLast(DLList* list)
 }
 
 
-void* DLList_extractAt(DLList* list, u16 index)
+void* LIST_extractAt(List* list, u16 index)
 {
+    /*
     if (NULL == list)
     {
         return NULL;
     }
-    if (DLList_isEmpty(list))
+
+    if (index >= list->length_)
+    {
+        return list->ops_->extractLast(list);
+    }
+
+    if (LIST_isEmpty(list))
+    {
+        return NULL;
+    }
+
+    MemoryNode *node_to_extract;
+
+    // If extractFirst
+    if (index == 0)
+    {
+       return LIST_extractFirst(list);
+    }
+    // search prev node to extract
+    MemoryNode *prev_node = NULL;
+    MemoryNode *current_node = list->head_;
+    u16 current_index = 0;
+
+    while (current_index < index)
+    {
+        prev_node = current_node;
+        current_node = current_node->next_;
+        current_index++;
+    }
+    node_to_extract = current_node;
+    //prev_node->next_ = current_node->next_;
+    // Free
+    void* extracted_data = node_to_extract->data_;
+    MM->free(node_to_extract);
+    current_node->next_ = NULL;
+    list->length_--;
+
+    return extracted_data;
+    */
+    if (NULL == list)
+    {
+        return NULL;
+    }
+    if (LIST_isEmpty(list))
     {
         return NULL;
     }
@@ -556,50 +570,27 @@ void* DLList_extractAt(DLList* list, u16 index)
     {
         index = list->length_;
     }
-    MemoryNode* node = MEMNODE_create();
-    MemoryNode* aux = MEMNODE_create();
-    if(NULL == aux || NULL == node)
+    MemoryNode* node;
+    MemoryNode* aux = list->head_;
+    for (u16 i = 0; i < index - 1; i++)
     {
-        return kErrorCode_Null;
-    }
-    if(0 == index)
-    {
-        return DLList_extractLast(list);
-    }
-    if(index >= list->length_)
-    {
-        return DLList_extractLast(list);
-    }
-    u16 mid = list->length_/2;
-    if(index <= mid){
-        aux = list->head_;
-        for (u16 i = 0; i < index - 1; i++)
-        {
-            aux = aux->next_;
-        }
-    }else{
-        aux = list->tail_;
-        for(u16 i = list->length_ - 1; i > index; i--)
-        {
-            aux = aux->prev_;
-        }
+        aux = aux->next_;
     }
     node = aux->next_;
     aux->next_ = aux->next_->next_;
-    
     list->length_--;
     return node->data_;
 }
 
 
-s16 DLList_concat(DLList* list, DLList* next_list)
+s16 LIST_concat(List* list, List* next_list)
 {
     if (list == NULL || next_list == NULL)
     {
         return kErrorCode_ListNull;
     }
 
-    if (DLList_isEmpty(next_list))
+    if (LIST_isEmpty(next_list))
     {
         return kErrorCode_Ok;
     }
@@ -647,7 +638,7 @@ s16 DLList_concat(DLList* list, DLList* next_list)
     return kErrorCode_Ok;
 }
 
-s16 DLList_traverse(DLList* list, void(*callback)(MemoryNode*))
+s16 LIST_traverse(List* list, void(*callback)(MemoryNode*))
 {
     if (NULL == list)
     {
@@ -670,30 +661,30 @@ s16 DLList_traverse(DLList* list, void(*callback)(MemoryNode*))
 }
 
 
-void DLList_print(DLList* list)
+void LIST_print(List* list)
 {
     if (NULL == list)
     {
-        printf("\t[DLList Info] Address: NULL\n");
+        printf("\t[List Info] Address: NULL\n");
         return;
     }
-    if (DLList_isEmpty(list))
+    if (LIST_isEmpty(list))
     {
-        printf("\t[DLList Info] Address: %p\n", list);
-        printf("\t[DLList Info] Head: NULL\n");
-        printf("\t[DLList Info] Tail: NULL\n");
-        printf("\t[DLList Info] Length: %d\n", DLList_lenght(list));
-        printf("\t[DLList Info] Capacity: %d\n", DLList_capacity(list));
+        printf("\t[List Info] Address: %p\n", list);
+        printf("\t[List Info] Head: NULL\n");
+        printf("\t[List Info] Tail: NULL\n");
+        printf("\t[List Info] Length: %d\n", LIST_lenght(list));
+        printf("\t[List Info] Capacity: %d\n", LIST_capacity(list));
         return;
     }
-    printf("\t[DLList Info] Head: %p\n", list->head_);
-    printf("\t[DLList Info] Tail: %p\n", list->tail_);
-    printf("\t[DLList Info] Length: %d\n", DLList_lenght(list));
-    printf("\t[DLList Info] Capacity: %d\n", DLList_capacity(list));
+    printf("\t[List Info] Head: %p\n", list->head_);
+    printf("\t[List Info] Tail: %p\n", list->tail_);
+    printf("\t[List Info] Length: %d\n", LIST_lenght(list));
+    printf("\t[List Info] Capacity: %d\n", LIST_capacity(list));
     MemoryNode* aux = list->head_;
     for (u16 i = 0; i < list->ops_->length(list); i++)
     {
-        printf("\t\t[DLList Info] Node #%d\n", i);
+        printf("\t\t[List Info] Node #%d\n", i);
         printf("\t\t\t[Node Info] Address: %p\n", aux);
         printf("\t\t\t[Node Info] Size: %d\n", aux->size_);
         printf("\t\t\t[Node Info] Data Address: %p\n", &aux->data_);
@@ -716,4 +707,3 @@ void DLList_print(DLList* list)
         aux = aux->next_;
     }
 }
-

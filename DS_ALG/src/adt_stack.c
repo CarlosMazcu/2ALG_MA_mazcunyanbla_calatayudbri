@@ -84,7 +84,7 @@ s16 STACK_reset(Stack* stack)
     {
         return kErrorCode_StackNull;
     }
-    stack->storage_->ops_->destroy(stack->storage_);
+    stack->storage_->ops_->reset(stack->storage_);
     return kErrorCode_Ok;
 }
 
@@ -94,8 +94,8 @@ u16 STACK_capacity(Stack *stack)
     {
         return 0;
     }
-    stack->storage_->ops_->capacity(stack->storage_);
-    return kErrorCode_Ok;
+   
+    return  stack->storage_->ops_->capacity(stack->storage_);;
 }
 
 u16 STACK_length(Stack* stack)
@@ -104,8 +104,8 @@ u16 STACK_length(Stack* stack)
     {
         return 0;
     }
-    stack->storage_->ops_->length(stack->storage_);
-    return kErrorCode_Ok;
+    
+    return stack->storage_->ops_->length(stack->storage_);;
 }
 
 boolean STACK_isEmpty(Stack* stack)
@@ -160,6 +160,9 @@ s16 STACK_concat(Stack* stack, Stack* stack_src)
     {
         return kErrorCode_StackNull;
     }
+
+    
+
     stack->storage_->ops_->concat(stack->storage_, stack_src->storage_);
     return kErrorCode_Ok;
 }
