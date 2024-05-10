@@ -18,12 +18,12 @@ typedef struct list_s {
   MemoryNode* tail_;
   u16 length_;
   u16 capacity_;
-  struct list_ops_s *ops_;
+  struct dllist_ops_s *ops_;
 } DLList;
 
 // Memory Node's API Declarations
 
-struct list_ops_s {
+struct dllist_ops_s {
  /**
  * @brief Returns the next node in the list.
  *

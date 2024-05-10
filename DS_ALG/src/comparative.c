@@ -20,21 +20,26 @@
 
 const int kReserve_ = 10000; 
 void* data[10000];
+Vector* vector;
+
 
 void TESTBASE_generateDataForComparative() {
-	for(u16 i = 0; i < kReserve_; ++i)
-	{
-		data[i] = MM->malloc(sizeof(int));
-		data[i] = (void*)(rand()%10000);
-	}
+	//TODO some stuff
 }
 
-void calculateTimeForFunction() {
+void calculateTimeForFunctionInsert() {
 	LARGE_INTEGER frequency;				// ticks per second
 	LARGE_INTEGER  time_start, time_end;    // ticks in interval
 	double elapsed_time = 0.0f;
 	u32 repetitions = 10000;
-	Vector* v;
+	vector = VECTOR_create(10000);
+	// Create a vector with capacity for 10000 elements
+
+	// Generate random data to fill the vector
+	for (int i = 0; i < 10000; ++i) {
+		data[i] = (void*)(intptr_t)rand(); // Example of generating random data
+	}
+
 
 	///////////////////////////////////////////////////////////////////////
 	// Frequency: ticks per second
@@ -47,7 +52,9 @@ void calculateTimeForFunction() {
 	QueryPerformanceCounter(&time_start);
 	// execute function to meassure 'repetitions' times
 	for (u32 rep = 0; rep < repetitions; ++rep) {
-		v->ops_->insertFirst(v, data[rep], sizeof(int));
+	//	vector->ops_->insertFirst(vector, data[rep], sizeof(int));
+		int uwu = rand() % 10000;
+		vector->ops_->insertAt(vector,data[rep],sizeof(int), uwu);
 	}
 	// stop timer
 	QueryPerformanceCounter(&time_end);
@@ -64,10 +71,56 @@ void calculateTimeForFunction() {
 	///////////////////////////////////////////////////////////////////////
 }
 
+void calculateTimeForFunctionExtract() {
+	LARGE_INTEGER frequency;				// ticks per second
+	LARGE_INTEGER  time_start, time_end;    // ticks in interval
+	double elapsed_time = 0.0f;
+	u32 repetitions = 10000;
+
+	// Create a vector with capacity for 10000 elements
+
+	// Generate random data to fill the vector
+	//for (int i = 0; i < 10000; ++i) {
+	//	data[i] = (void*)(intptr_t)rand(); // Example of generating random data
+	//}
+
+
+	///////////////////////////////////////////////////////////////////////
+	// Frequency: ticks per second
+	QueryPerformanceFrequency(&frequency);
+	///////////////////////////////////////////////////////////////////////
+
+	///////////////////////////////////////////////////////////////////////
+	// Meassurement time
+	// start timer
+	QueryPerformanceCounter(&time_start);
+	// execute function to meassure 'repetitions' times
+	for (u32 rep = 0; rep < repetitions; ++rep) {
+		int uwu = rand() % 10000;
+		vector->ops_->extractAt(vector,uwu);
+	}
+	// stop timer
+	QueryPerformanceCounter(&time_end);
+	///////////////////////////////////////////////////////////////////////
+
+	///////////////////////////////////////////////////////////////////////
+	// compute the elapsed time in microseconds
+	elapsed_time = (time_end.QuadPart - time_start.QuadPart) * 1000000.0f / frequency.QuadPart;
+	printf("Elapsed extract time: %f ms\n", elapsed_time);
+	///////////////////////////////////////////////////////////////////////
+	// compute the average time
+	double average_time = elapsed_time / repetitions;
+	printf("Average extract time: %f ms\n", average_time);
+	///////////////////////////////////////////////////////////////////////
+}
+
+
 int main(int argc, char** argv) {
 	srand(time(NULL));
 	TESTBASE_generateDataForComparative();
-	calculateTimeForFunction();
+	calculateTimeForFunctionInsert();
+	printf("\n");
+	calculateTimeForFunctionExtract();
 	MM->status();
 	printf("Press ENTER to continue\n");
 	getchar();

@@ -38,7 +38,7 @@ static s16 DLList_traverse(DLList* list, void (*callback)(MemoryNode*));
 static void DLList_print(DLList* list);
 
 // DLList's API Definitions
-struct list_ops_s list_ops = { .next = DLList_next,
+struct dllist_ops_s dllist_ops = { .next = DLList_next,
                                              .destroy = DLList_destroy,
                                              .reset = DLList_reset,
                                              .softReset = DLList_softReset,
@@ -77,7 +77,7 @@ DLList* DLList_create(u16 capacity)
     list_->tail_ = NULL;
     list_->capacity_ = capacity;
     list_->length_ = 0;
-    list_->ops_ = &list_ops;
+    list_->ops_ = &dllist_ops;
     return list_;
 
 }

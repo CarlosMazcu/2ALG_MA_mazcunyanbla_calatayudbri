@@ -11,7 +11,7 @@
 #define __ADT_QUEUE_H__
 
 #include "EDK_MemoryManager/edk_platform_types.h"
-#include "adt_dllist.h"
+#include "adt_list.h"
 
 typedef struct queue_s
 {
