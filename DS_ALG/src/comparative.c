@@ -21,6 +21,7 @@
 const int kReserve_ = 10000; 
 void* data[10000];
 Vector* vector;
+DLList* list_;
 
 
 void TESTBASE_generateDataForComparative() {
@@ -31,8 +32,9 @@ void calculateTimeForFunctionInsert() {
 	LARGE_INTEGER frequency;				// ticks per second
 	LARGE_INTEGER  time_start, time_end;    // ticks in interval
 	double elapsed_time = 0.0f;
-	u32 repetitions = 10000;
-	vector = VECTOR_create(10000);
+	u32 repetitions = 500;
+	list_ = DLList_create(10000);
+	DLList* list2_ = DLList_create(500);
 	// Create a vector with capacity for 10000 elements
 
 	// Generate random data to fill the vector
@@ -53,9 +55,11 @@ void calculateTimeForFunctionInsert() {
 	// execute function to meassure 'repetitions' times
 	for (u32 rep = 0; rep < repetitions; ++rep) {
 	//	vector->ops_->insertFirst(vector, data[rep], sizeof(int));
-		int uwu = rand() % 10000;
-		vector->ops_->insertAt(vector,data[rep],sizeof(int), uwu);
+		//int uwu = rand() % 10000;
+		//list_->ops_->concat(list_,data[rep],sizeof(int), uwu);
+		list_->ops_->concat(list_, list2_);
 	}
+	//printf("CONCAT DONETE");
 	// stop timer
 	QueryPerformanceCounter(&time_end);
 	///////////////////////////////////////////////////////////////////////
@@ -120,8 +124,8 @@ int main(int argc, char** argv) {
 	TESTBASE_generateDataForComparative();
 	calculateTimeForFunctionInsert();
 	printf("\n");
-	calculateTimeForFunctionExtract();
-	MM->status();
+	//calculateTimeForFunctionExtract();
+	//MM->status();
 	printf("Press ENTER to continue\n");
 	getchar();
 	MM->destroy();

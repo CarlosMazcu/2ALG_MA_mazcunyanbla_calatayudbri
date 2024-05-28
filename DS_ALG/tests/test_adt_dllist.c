@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+//#include "adt_dllist.h"
 #include "adt_dllist.h"
 #include "EDK_MemoryManager/edk_memory_manager.h"
 
@@ -20,12 +21,12 @@ const u16 kCapacityList3 = 2;
 
 int main() {
 	s16 error_type = 0;
-
+	
 	TESTBASE_generateDataForTest();
 
 	// list created just to have a reference to the operations
 	DLList* ls = NULL;
-	ls = DLLIST_create(1);
+	ls = DLList_create(1);
 	if (NULL == ls) {
 		printf("\n create returned a null node in list for ops");
 		return -1;
@@ -34,17 +35,17 @@ int main() {
 	DLList* list_1 = NULL;
 	DLList* list_2 = NULL;
 	DLList* list_3 = NULL;
-	list_1 = DLLIST_create(kCapacityList1);
+	list_1 = DLList_create(kCapacityList1);
 	if (NULL == list_1) {
 		printf("\n create returned a null node in list_1\n");
 		return -1;
 	}
-	list_2 = DLLIST_create(kCapacityList2);
+	list_2 = DLList_create(kCapacityList2);
 	if (NULL == list_2) {
 		printf("\n create returned a null node in list_2\n");
 		return -1;
 	}
-	list_3 = DLLIST_create(kCapacityList3);
+	list_3 = DLList_create(kCapacityList3);
 	if (NULL == list_3) {
 		printf("\n create returned a null node in list_3\n");
 		return -1;

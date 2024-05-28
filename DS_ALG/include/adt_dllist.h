@@ -6,14 +6,14 @@
  * @version 1.0
  */
 
-#ifndef __ADT_LIST_H__
-#define __ADT_LIST_H__
+#ifndef __ADT_DLLIST_H__
+#define __ADT_DLLIST_H__
 
 #include "EDK_MemoryManager/edk_platform_types.h"
 #include "adt_memory_node.h"
 
 // Memory Node type
-typedef struct list_s {
+typedef struct dllist_s {
   MemoryNode* head_;
   MemoryNode* tail_;
   u16 length_;
