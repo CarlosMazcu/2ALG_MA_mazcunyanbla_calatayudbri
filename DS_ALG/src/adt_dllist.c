@@ -92,16 +92,6 @@ MemoryNode* DLList_next(MemoryNode* node)
     return node->next_;
 }
 
-/* s16 DLList_setNext(MemoryNode* node, MemoryNode* next)
-{
-    if (NULL == node || NULL == next) {
-        return kErrorCode_NodeNull;
-    }
-    node->next_ = next;
-    return kErrorCode_Ok;
-} */
-
-/*Comprobar si es correcto*/
 s16 DLList_destroy(DLList* list) {
 
     if (NULL == list)
@@ -543,6 +533,39 @@ void* DLList_extractAt(DLList* list, u16 index)
     {
         return NULL;
     }
+    if (list->ops_->isEmpty(list)) 
+    {
+        return NULL;
+    }
+    if (index >= list->length_)
+    {
+        return NULL;
+    }
+    if (index == 0)
+    {
+        return DLList_extractFirst(list);
+    }
+    if (index == list->length_)
+    {
+        return DLList_extractLast(list);
+    }
+     MemoryNode* node = MEMNODE_create();
+    if (NULL == node) return kErrorCode_DataNull;
+    MemoryNode* aux = list->head_;
+    for (u16 i = 0; i < index - 1; i++)
+    {
+        aux = aux->next_;
+    }
+    node = aux->next_;
+    aux->next_ = aux->next_->next_;
+    aux->next_->prev_ = aux;
+    list->length_--;
+    return node->data_;
+
+ /*   if (NULL == list)
+    {
+        return NULL;
+    }
     if (DLList_isEmpty(list))
     {
         return NULL;
@@ -588,7 +611,7 @@ void* DLList_extractAt(DLList* list, u16 index)
     aux->next_ = aux->next_->next_;
     
     list->length_--;
-    return node->data_;
+    return node->data_;*/
 }
 
 

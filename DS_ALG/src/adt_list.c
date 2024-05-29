@@ -509,66 +509,44 @@ void* LIST_extractLast(List* list)
 
 void* LIST_extractAt(List* list, u16 index)
 {
-    /*
+    //if (NULL == list)
+    //{
+    //    return NULL;
+    //}
+    //if (LIST_isEmpty(list))
+    //{
+    //    return NULL;
+    //}
+    //if (NULL == list->head_) {
+
+    //    return NULL;
+    //}
+
+    //if (index >= list->length_)
+    //{
+    //    index = list->length_;
+    //}
+    //MemoryNode* node;
+    //MemoryNode* aux = list->head_;
+    //for (u16 i = 0; i < index - 1; i++)
+    //{
+    //    aux = aux->next_;
+    //}
+    //node = aux->next_;
+    //aux->next_ = aux->next_->next_;
+    //list->length_--;
+    //return node->data_;
     if (NULL == list)
     {
         return NULL;
     }
-
+    if (list->ops_->isEmpty(list))
+    {
+        return NULL;
+    }
     if (index >= list->length_)
     {
-        return list->ops_->extractLast(list);
-    }
-
-    if (LIST_isEmpty(list))
-    {
         return NULL;
-    }
-
-    MemoryNode *node_to_extract;
-
-    // If extractFirst
-    if (index == 0)
-    {
-       return LIST_extractFirst(list);
-    }
-    // search prev node to extract
-    MemoryNode *prev_node = NULL;
-    MemoryNode *current_node = list->head_;
-    u16 current_index = 0;
-
-    while (current_index < index)
-    {
-        prev_node = current_node;
-        current_node = current_node->next_;
-        current_index++;
-    }
-    node_to_extract = current_node;
-    //prev_node->next_ = current_node->next_;
-    // Free
-    void* extracted_data = node_to_extract->data_;
-    MM->free(node_to_extract);
-    current_node->next_ = NULL;
-    list->length_--;
-
-    return extracted_data;
-    */
-    if (NULL == list)
-    {
-        return NULL;
-    }
-    if (LIST_isEmpty(list))
-    {
-        return NULL;
-    }
-    if (NULL == list->head_) {
-
-        return NULL;
-    }
-
-    if (index >= list->length_)
-    {
-        index = list->length_;
     }
     MemoryNode* node;
     MemoryNode* aux = list->head_;

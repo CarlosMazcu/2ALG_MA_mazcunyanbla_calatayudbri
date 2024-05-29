@@ -262,7 +262,7 @@ s16 MEMNODE_memCopy(MemoryNode* node, void* src, u16 bytes)
     }
     for (int i = 0; i < bytes; i++)
     {
-        aux2[i] = aux[i];
+        aux2[i] = aux;
     }
     node->data_ = aux2;
     node->size_ = bytes;
