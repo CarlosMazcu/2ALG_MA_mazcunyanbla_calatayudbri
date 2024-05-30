@@ -175,7 +175,7 @@ project "PR01_Vector"
   project "PR10_Queue"
   files {
     path.join(PROJ_DIR, "include/adt_dllist.h"),
-    path.join(PROJ_DIR, "src/adt_dllist.c"),
+    path.join(PROJ_DIR, "src/adt_list.c"),
     path.join(PROJ_DIR, "src/adt_memory_node.c"),
     path.join(PROJ_DIR, "include/adt_queue.h"),
     path.join(PROJ_DIR, "src/adt_queue.c"),
